@@ -1,9 +1,14 @@
-#include <graphics.h>
-#include <stdio.h>
-#include <conio.h>
+/* 
+ * File:   Rules.h
+ * 
+ * Game rules and validation checks go here.
+ * 
+ */
+
+#ifndef RULES_H
+#define	RULES_H
+
 #include "Enums&Structs.h"
-#include "DrawFunctions.h"
-#include "MoveFunctions.h"
 
 /*Copy  this part if the code in every header file*/
 #define ROW 8
@@ -22,19 +27,5 @@ typedef struct Cell Cell;
 typedef struct Cell * PtrCell;
 /*End of required copy pasting*/
 
-enum GameState { Welcome, Playing, PlayerWin, CPUWin };
+#endif	/* RULES_H */
 
-typedef enum GameState GameState;
-
-int main(void)
-{
-   int mode, driver = DETECT;
-   initgraph(&driver, &mode, NULL); 
-   
-   DrawBoard( &CheckersBoard );
-   
-   getche();
-   closegraph();
-   
-   return 0;
-}

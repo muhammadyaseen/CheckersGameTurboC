@@ -1,9 +1,15 @@
-#include <graphics.h>
-#include <stdio.h>
-#include <conio.h>
+/* 
+ * File:   MoveFunctions.h
+ * 
+ * Functions to move the pieces go here.
+ * 
+ */
+
+#ifndef MOVEFUNCTIONS_H
+#define	MOVEFUNCTIONS_H
+
 #include "Enums&Structs.h"
-#include "DrawFunctions.h"
-#include "MoveFunctions.h"
+#include "Rules.h"
 
 /*Copy  this part if the code in every header file*/
 #define ROW 8
@@ -22,19 +28,5 @@ typedef struct Cell Cell;
 typedef struct Cell * PtrCell;
 /*End of required copy pasting*/
 
-enum GameState { Welcome, Playing, PlayerWin, CPUWin };
+#endif	/* MOVEFUNCTIONS_H */
 
-typedef enum GameState GameState;
-
-int main(void)
-{
-   int mode, driver = DETECT;
-   initgraph(&driver, &mode, NULL); 
-   
-   DrawBoard( &CheckersBoard );
-   
-   getche();
-   closegraph();
-   
-   return 0;
-}
