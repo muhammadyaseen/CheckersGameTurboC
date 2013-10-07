@@ -16,7 +16,7 @@
 #define DRAW_START_UP 3    // draw piece in first two rows
 #define DRAW_START_DOWN 4  // draw piece in last two rows
 
-/*Copy  this part if the code in every header file*/
+/*Copy  this part of the code in every header file*/
 #define ROW 8
 #define COL 8
 

@@ -5,7 +5,7 @@
 #include "DrawFunctions.h"
 #include "MoveFunctions.h"
 
-/*Copy  this part if the code in every header file*/
+/*Copy  this part of the code in every header file*/
 #define ROW 8
 #define COL 8
 
