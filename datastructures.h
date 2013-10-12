@@ -3,8 +3,9 @@
 
 #define ROW 8
 #define COL 8
-#define WIDTH 55
-#define HEIGHT 55
+#define WIDTH 75
+#define HEIGHT 75
+#define RADIUS 25
 #define DRAW_START_UP 3    // draw piece in first two rows
 #define DRAW_START_DOWN 4  // draw piece in last two rows
 

@@ -37,7 +37,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     int circleY = (cell->Top + cell->Bottom) / 2;
 
     //draws the circle for this piece
-    circle( circleX ,circleY, 20  );
+    circle( circleX ,circleY, RADIUS  );
 
     setfillstyle(SOLID_FILL, color);
 

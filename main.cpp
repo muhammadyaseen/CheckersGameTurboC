@@ -13,7 +13,9 @@ int main(void)
 {
    int mode, driver = DETECT;
    
-   initgraph(&driver, &mode, NULL); 
+   //initgraph(&driver, &mode, NULL); 
+   
+   initwindow(1200, 900);
    
    //Draws the initial state of board
    DrawBoard( &CheckersBoard );
