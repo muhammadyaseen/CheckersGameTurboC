@@ -3,17 +3,22 @@
 
 void DrawBoard(PtrBoard);
 
+/* 
+ * @description : Used to draw the initial state of board when the game starts
+ * 
+ * @param - board - Address of the global struct Board variable. We use it to 'fill' in the array entries, as we build cells and pieces
+ * 
+ */
 
 void DrawBoard(PtrBoard board)
 {
-   //Cells will be of blue border
-    
+   //Cells will be of blue border   
    setcolor(BLUE);
    
-   //goes from 0 to ROW*COL, we are using it to keep track of cells array in board
+   //goes from 0 to ROW*COL, we are using it to keep track / index of cells array in board
    int cellNo = 0;
    
-   //goes from 0 to 12, we are using it to keep track of pieces array in board
+   //goes from 0 to 12 (for 8 x 8), we are using it to keep track /index of pieces array in board
    int pieceNo = 0;
    
    for(int row = 0; row < ROW; row++)
@@ -32,7 +37,7 @@ void DrawBoard(PtrBoard board)
             board->Cells[cellNo].Column = col;
             
             //Draws the cell configured above
-            DrawCell( &board->Cells[cellNo], row, col, board );
+            DrawCell( &board->Cells[cellNo], row, col );
             
             // if it is a 'white' cell      AND        this row should have Pieces 
             if ( ( (col + row )  % 2 == 0 ) && ( row < DRAW_START_UP || row > DRAW_START_DOWN) )

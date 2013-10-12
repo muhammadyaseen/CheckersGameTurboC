@@ -1,11 +1,16 @@
 #ifndef CELL_H
 #define	CELL_H
 
-void DrawCell(PtrCell, int, int, PtrBoard);
+void DrawCell(PtrCell, int, int);
 
+/* @description : Used to draw the rectangular ceell on board.
+ * 
+ * @param -  cellToDraw - Address of the configured struct Cell instance to be drawn
+ * @param - row - The row in which this cell should be drawn
+ * @param - col - The column in which this cell should be drawn
+ */
 
-
-void DrawCell(PtrCell cellToDraw, int row, int col, PtrBoard board)
+void DrawCell(PtrCell cellToDraw, int row, int col)
 {
     rectangle( cellToDraw->Left, cellToDraw->Top, cellToDraw->Right, cellToDraw->Bottom );
     

@@ -15,6 +15,7 @@ int main(void)
    
    initgraph(&driver, &mode, NULL); 
    
+   //Draws the initial state of board
    DrawBoard( &CheckersBoard );
    
    getche();
