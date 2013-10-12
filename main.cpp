@@ -18,8 +18,15 @@ int main(void)
    //Draws the initial state of board
    DrawBoard( &CheckersBoard );
    
+   
+   outtextxy("No Piece Selected", )
    getche();
+   
    closegraph();
+   
+   //getpixel
+   //ismouseclick
+   //getmouseclick
    
    return 0;
 }
