@@ -29,8 +29,6 @@ int main(void)
    
    strcpy(turnColor, "RED");
    
-   int turnPending = 1;
-   
    while(true)
    {
    
@@ -38,9 +36,11 @@ int main(void)
        
        getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
        
-       
-       if ( !( mouseX == -1 && mouseY == -1) && turnPending )
+       // if the button was clicked, then we check if the correct piece was selected
+       if ( !( mouseX == -1 && mouseY == -1) )
        {
+           //for ex, it this is blue's turn but user clicks on a red piece
+           //this check tests that scenario
            if ( getpixel(mouseX, mouseY) != turn )
            {
                outtextxy(600, 90,"Please correct colored piece");
@@ -52,39 +52,50 @@ int main(void)
            }
            else
            {
-               //turnPending = !turnPending;
-               
+               //user has selected the correct piece, now we have to identify the possible targets for the move
                PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
+              
+               //identify targets : Piece can only move in diagonals ( in white cells )
                
-               
-               
-               //hightlight targets
-               //max 2 min0
-               
-               //
+               //max 2 targets are possible for a move, minimum 0
                
                int target1Row, target2Row, target1Col, target2Col;
                
-               if ( turn == RED )
+               if ( turn == RED )   //red piece go downwards
                {
                     target1Row = clickedCell->Row + 1;
                     target2Row = clickedCell->Row + 1;
                     
                     target1Col = clickedCell->Column + 1;
-                    target2Col = clickedCell->Column - 1;
+                    target2Col = clickedCell->Column - 1;    
+               }
+               else
+               {
+                    target1Row = clickedCell->Row - 1;
+                    target2Row = clickedCell->Row - 1;
                     
+                    target1Col = clickedCell->Column + 1;
+                    target2Col = clickedCell->Column - 1; 
                }
                
-               PtrCell target1 = GetCellByRowColumn(target1Row, target1Col, &CheckersBoard);
+               PtrCell target1 = GetCellByRowColumn(target1Row, target1Col, &CheckersBoard, TRUE);
                
-               PtrCell target2 = GetCellByRowColumn(target2Row, target2Col, &CheckersBoard);
+               PtrCell target2 = GetCellByRowColumn(target2Row, target2Col, &CheckersBoard, TRUE);
                
                setfillstyle(SOLID_FILL, YELLOW);
         
-               floodfill( target1->Left + 1, target1->Bottom - 1 , BLUE );
                
-               floodfill( target2->Left + 1, target2->Bottom - 1 , BLUE );
+               //if both targets are null, user must again select the piece to complete the move
+               if ( target1 == NULL && target2 == NULL )
+                   continue;
                
+               if ( target1 != NULL && target1->IsOccupied == 0 )
+                    floodfill( target1->Left + 1, target1->Bottom - 1 , BLUE );
+               
+               if ( target2 != NULL && target2->IsOccupied == 0 )
+                    floodfill( target2->Left + 1, target2->Bottom - 1 , BLUE );
+               
+               //trigger next turn
                turn = turn == BLUE ? RED : BLUE; 
                //GetClickedPiece();
            }
@@ -96,10 +107,6 @@ int main(void)
    getche();
    
    closegraph();
-   
-   //getpixel
-   //ismouseclick
-   //getmouseclick
-   
+      
    return 0;
 }
