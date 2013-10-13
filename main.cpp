@@ -31,8 +31,7 @@ int main(void)
    
    while(true)
    {
-   
-       //check of correct piece is selected
+       //check if correct piece is selected
        
        getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
        
@@ -100,8 +99,6 @@ int main(void)
                //GetClickedPiece();
            }
        }
-
-   
    }
    
    getche();
