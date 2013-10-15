@@ -1,6 +1,9 @@
 #ifndef PIECE_H
 #define	PIECE_H
 
+#include "datastructures.h"
+
+
 void DrawPiece(PtrBoard, PtrCell, int, int);
 
 /* 
@@ -25,6 +28,8 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     board->Pieces[pieceNo].IsKing = 0;
     board->Pieces[pieceNo].State = OnBoard;
     board->Pieces[pieceNo].Type = type;
+    
+    board->Pieces[pieceNo].ID = pieceNo;
 
     //store a reference to this piece in cell
     cell->Piece = &board->Pieces[pieceNo];

@@ -49,8 +49,8 @@ PtrCell GetClickedCell(int X, int Y, PtrBoard board)
         if ( board->Cells[i].Left < X && board->Cells[i].Right > X && board->Cells[i].Top < Y && board->Cells[i].Bottom > Y )
         {
             //draws the cross
-            line(board->Cells[i].Left, board->Cells[i].Top, board->Cells[i].Right, board->Cells[i].Bottom );
-            line(board->Cells[i].Right, board->Cells[i].Top, board->Cells[i].Left, board->Cells[i].Bottom );
+            //line(board->Cells[i].Left, board->Cells[i].Top, board->Cells[i].Right, board->Cells[i].Bottom );
+            //line(board->Cells[i].Right, board->Cells[i].Top, board->Cells[i].Left, board->Cells[i].Bottom );
             
             return &board->Cells[i];
         
@@ -126,7 +126,7 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
        setfillstyle(SOLID_FILL, YELLOW);
 
        //if both targets are null, user must again select the piece to complete the move
-       if ( target1 == NULL && target2 == NULL )
+       if ( (*target1) == NULL && (*target2) == NULL )
            return FALSE;
 
        if ( (*target1) != NULL && (*target1)->IsOccupied == 0 )
@@ -157,15 +157,16 @@ int InterceptTargetClicks(PtrCell *clickedTarget, PtrCell target1, PtrCell targe
        if ( (*clickedTarget) != NULL ) //this check ensures that at least user clicked on a 'cell' and no where else on screen
        {
            //now we can check whether the clicked cell was one of the target cells
-
-           if( (*clickedTarget)->Row == target1->Row && (*clickedTarget)->Column == target1->Column )
+           //one of the two target cells could be null
+           
+           if( target1 != NULL && ( (*clickedTarget)->Row == target1->Row && (*clickedTarget)->Column == target1->Column ) )
            {
                //target one was selected as destination
                outtextxy(550, 60, "target 1");
                return TRUE;
 
            } 
-           else if ( (*clickedTarget)->Row == target2->Row && (*clickedTarget)->Column == target2->Column )
+           else if (  target2 != NULL && ( (*clickedTarget)->Row == target2->Row && (*clickedTarget)->Column == target2->Column ) )
            {
                //target one was selected as destination
                outtextxy(550, 70, "target 2");

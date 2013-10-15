@@ -27,7 +27,7 @@ typedef struct Cell * PtrCell;
 typedef struct Piece * PtrPiece;
 
 struct Cell {
-    
+    int ID;
     int Top;
     int Right;
     int Bottom;
@@ -45,7 +45,7 @@ struct Cell {
 };
 
 struct Piece {
-    
+    int ID;
     PieceType Type;
     int IsKing;
     PieceState State;

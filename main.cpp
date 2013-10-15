@@ -64,8 +64,8 @@ int main(void)
                
                //now, targets have been identified and highlighted
                //we need to intercept clicks on target
-               //int targetX = -1, targetY = -1, validTargetSelected = FALSE;
                
+               //IDenftify which target was selected
                PtrCell clickedTarget;
                
                //this forces the user to select a valid target
@@ -76,8 +76,35 @@ int main(void)
                } //end while for target selection
                
                //When we exit the above loop, clickedTarget contains the address of a valid target 
-                   
-             //  outtextxy(500, 50, "Outta target loop");
+                                  
+               //now we have to move the piece to clicked cell
+               
+               //change prev cell data
+               
+               clickedCell->IsOccupied = FALSE;
+               
+               //clickedCell->Piece = NULL
+               
+               //change target cell data
+                       
+               clickedTarget->Piece = clickedCell->Piece;
+               clickedTarget->IsOccupied = TRUE;
+               
+               clickedCell->Piece = NULL;
+               
+               //re draw prev cell
+               
+               DrawCell( clickedCell, clickedCell->Row, clickedCell->Column );
+               
+               //redraw target cells in normal white color
+               
+               if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
+               if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
+               
+               //draw piece on target cell
+               
+               DrawPiece( &CheckersBoard, clickedTarget, clickedTarget->Piece->ID, turn );
+               
                
                //set values for next turn
                turn = turn == BLUE ? RED : BLUE; 
@@ -87,7 +114,7 @@ int main(void)
        }
    }
    
-   getche();
+   //getche();
    
    closegraph();
       
