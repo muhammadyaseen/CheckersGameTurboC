@@ -142,5 +142,45 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
        //now, targets have been identified and highlighted
 
 }
+
+int InterceptTargetClicks(PtrCell *clickedTarget, PtrCell target1, PtrCell target2, PtrBoard board)
+{
+    int targetX, targetY;
+    getmouseclick(WM_LBUTTONDOWN, targetX, targetY);
+
+    if ( ! ( targetX == -1 && targetY == -1 ) )
+    {
+       //check whether the correct target is selecting using X,Y co-ords
+
+       *clickedTarget = GetClickedCell(targetX, targetY, board );
+
+       if ( (*clickedTarget) != NULL ) //this check ensures that at least user clicked on a 'cell' and no where else on screen
+       {
+           //now we can check whether the clicked cell was one of the target cells
+
+           if( (*clickedTarget)->Row == target1->Row && (*clickedTarget)->Column == target1->Column )
+           {
+               //target one was selected as destination
+               outtextxy(550, 60, "target 1");
+               return TRUE;
+
+           } 
+           else if ( (*clickedTarget)->Row == target2->Row && (*clickedTarget)->Column == target2->Column )
+           {
+               //target one was selected as destination
+               outtextxy(550, 70, "target 2");
+               return TRUE;
+           }
+           else
+           {
+               //user clicked on a non-target / non-highlighted cell
+               outtextxy(550, 80, "non target");
+               return FALSE;
+           }
+       }
+    }
+    
+    return FALSE;
+}
 #endif	/* CELL_H */
 

@@ -64,45 +64,15 @@ int main(void)
                
                //now, targets have been identified and highlighted
                //we need to intercept clicks on target
-               int targetX = -1, targetY = -1, validTargetSelected = FALSE;
+               //int targetX = -1, targetY = -1, validTargetSelected = FALSE;
+               
                PtrCell clickedTarget;
                
                //this forces the user to select a valid target
                //until the the mouse is clicked, this loop will keep on polling the device
-               while( !validTargetSelected )
+               while( !InterceptTargetClicks(&clickedTarget, target1, target2, &CheckersBoard) )
                {
-                   getmouseclick(WM_LBUTTONDOWN, targetX, targetY);
-
-                   if ( ! ( targetX == -1 && targetY == -1 ) )
-                   {
-                       //check whether the correct target is selecting using X,Y co-ords
-
-                       clickedTarget = GetClickedCell(targetX, targetY, &CheckersBoard );
-
-                       if ( clickedTarget != NULL ) //this check ensures that at least user clicked on a 'cell' and no where else on screen
-                       {
-                           //now we can check whether the clicked cell was one of the target cells
-
-                           if( clickedTarget->Row == target1->Row && clickedTarget->Column == target1->Column )
-                           {
-                               //target one was selected as destination
-                               outtextxy(550, 60, "target 1");
-                               validTargetSelected = TRUE;
-
-                           } 
-                           else if ( clickedTarget->Row == target2->Row && clickedTarget->Column == target2->Column )
-                           {
-                               //target one was selected as destination
-                               outtextxy(550, 70, "target 2");
-                               validTargetSelected = TRUE;
-                           }
-                           else
-                           {
-                               //user clicked on a non-target / non-highlighted cell
-                               outtextxy(550, 80, "non target");
-                           }
-                       }
-                    }             
+                  //well, we can wait till the user selects a target
                } //end while for target selection
                
                //When we exit the above loop, clickedTarget contains the address of a valid target 
