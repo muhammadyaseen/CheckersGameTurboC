@@ -93,5 +93,54 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
     }
 }
 
+
+int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
+{
+       //identify targets : Piece can only move in diagonals ( in white cells )
+
+       //max 2 targets are possible for a move, minimum 0
+
+       int target1Row, target2Row, target1Col, target2Col;
+
+       if ( turn == RED )   //red piece go downwards
+       {
+            target1Row = clickedCell->Row + 1;
+            target2Row = clickedCell->Row + 1;
+
+            target1Col = clickedCell->Column + 1;
+            target2Col = clickedCell->Column - 1;    
+       }
+       else //blue pieces go downwards
+       {
+            target1Row = clickedCell->Row - 1;
+            target2Row = clickedCell->Row - 1;
+
+            target1Col = clickedCell->Column + 1;
+            target2Col = clickedCell->Column - 1; 
+       }
+
+       *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE);
+
+       *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE);
+
+       setfillstyle(SOLID_FILL, YELLOW);
+
+       //if both targets are null, user must again select the piece to complete the move
+       if ( target1 == NULL && target2 == NULL )
+           return FALSE;
+
+       if ( (*target1) != NULL && (*target1)->IsOccupied == 0 )
+       {
+            floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BLUE );
+       }
+       if ( (*target2) != NULL && (*target2)->IsOccupied == 0 )
+       {
+            floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BLUE );
+       }
+
+       return TRUE;
+       //now, targets have been identified and highlighted
+
+}
 #endif	/* CELL_H */
 

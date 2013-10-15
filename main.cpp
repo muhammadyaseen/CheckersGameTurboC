@@ -56,46 +56,11 @@ int main(void)
            {
                //user has selected the correct piece, now we have to identify the possible targets for the move
                PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
-              
-               //identify targets : Piece can only move in diagonals ( in white cells )
                
-               //max 2 targets are possible for a move, minimum 0
+               PtrCell target1, target2;
                
-               int target1Row, target2Row, target1Col, target2Col;
-               
-               if ( turn == RED )   //red piece go downwards
-               {
-                    target1Row = clickedCell->Row + 1;
-                    target2Row = clickedCell->Row + 1;
-                    
-                    target1Col = clickedCell->Column + 1;
-                    target2Col = clickedCell->Column - 1;    
-               }
-               else
-               {
-                    target1Row = clickedCell->Row - 1;
-                    target2Row = clickedCell->Row - 1;
-                    
-                    target1Col = clickedCell->Column + 1;
-                    target2Col = clickedCell->Column - 1; 
-               }
-               
-               PtrCell target1 = GetCellByRowColumn(target1Row, target1Col, &CheckersBoard, TRUE);
-               
-               PtrCell target2 = GetCellByRowColumn(target2Row, target2Col, &CheckersBoard, TRUE);
-               
-               setfillstyle(SOLID_FILL, YELLOW);
-        
-               
-               //if both targets are null, user must again select the piece to complete the move
-               if ( target1 == NULL && target2 == NULL )
+               if ( !IdentifyAndHighlightTargets(turn, clickedCell, &target1, &target2, &CheckersBoard ) )
                    continue;
-               
-               if ( target1 != NULL && target1->IsOccupied == 0 )
-                    floodfill( target1->Left + 1, target1->Bottom - 1 , BLUE );
-               
-               if ( target2 != NULL && target2->IsOccupied == 0 )
-                    floodfill( target2->Left + 1, target2->Bottom - 1 , BLUE );
                
                //now, targets have been identified and highlighted
                //we need to intercept clicks on target
@@ -118,14 +83,14 @@ int main(void)
                        {
                            //now we can check whether the clicked cell was one of the target cells
 
-                           if( clickedTarget->Row == target1Row && clickedTarget->Column == target1Col )
+                           if( clickedTarget->Row == target1->Row && clickedTarget->Column == target1->Column )
                            {
                                //target one was selected as destination
                                outtextxy(550, 60, "target 1");
                                validTargetSelected = TRUE;
 
                            } 
-                           else if ( clickedTarget->Row == target2Row && clickedTarget->Column == target2Col )
+                           else if ( clickedTarget->Row == target2->Row && clickedTarget->Column == target2->Column )
                            {
                                //target one was selected as destination
                                outtextxy(550, 70, "target 2");
@@ -140,7 +105,7 @@ int main(void)
                     }             
                } //end while for target selection
                
-               //When we exit the above loop, clickedTarget contains the address of a valid target cell
+               //When we exit the above loop, clickedTarget contains the address of a valid target 
                    
              //  outtextxy(500, 50, "Outta target loop");
                
