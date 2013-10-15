@@ -33,11 +33,9 @@ int main(void)
    while(true)
    {
        //turn indicator
-       
        strcmp(turnColor, "BLUE") ? outtextxy(600, 110, "RED's turn") : outtextxy(600, 110,"BLUE's turn");
        
        //check if correct piece is selected
-       
        getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
        
        // if the button was clicked, then we check if the correct piece was selected
@@ -47,12 +45,12 @@ int main(void)
            //this check tests that scenario
            if ( getpixel(mouseX, mouseY) != turn )
            {
-               outtextxy(600, 90,"Select correct colored piece");
+               outtextxy(600, 90,"Select correct piece");
                
                if ( turn == RED )
-                   outtextxy(600, 110,"Please RED colored piece");
+                   outtextxy(600, 110,"Select RED colored piece");
                else 
-                   outtextxy(600, 110,"Please BLUE colored piece");    
+                   outtextxy(600, 110,"Select BLUE colored piece");    
            }
            else
            {
@@ -99,10 +97,57 @@ int main(void)
                if ( target2 != NULL && target2->IsOccupied == 0 )
                     floodfill( target2->Left + 1, target2->Bottom - 1 , BLUE );
                
-               //trigger next turn
+               //now, targets have been identified and highlighted
+               //we need to intercept clicks on target
+               int targetX = -1, targetY = -1, validTargetSelected = FALSE;
+               PtrCell clickedTarget;
+               
+               //this forces the user to select a valid target
+               //until the the mouse is clicked, this loop will keep on polling the device
+               while( !validTargetSelected )
+               {
+                   getmouseclick(WM_LBUTTONDOWN, targetX, targetY);
+
+                   if ( ! ( targetX == -1 && targetY == -1 ) )
+                   {
+                       //check whether the correct target is selecting using X,Y co-ords
+
+                       clickedTarget = GetClickedCell(targetX, targetY, &CheckersBoard );
+
+                       if ( clickedTarget != NULL ) //this check ensures that at least user clicked on a 'cell' and no where else on screen
+                       {
+                           //now we can check whether the clicked cell was one of the target cells
+
+                           if( clickedTarget->Row == target1Row && clickedTarget->Column == target1Col )
+                           {
+                               //target one was selected as destination
+                               outtextxy(550, 60, "target 1");
+                               validTargetSelected = TRUE;
+
+                           } 
+                           else if ( clickedTarget->Row == target2Row && clickedTarget->Column == target2Col )
+                           {
+                               //target one was selected as destination
+                               outtextxy(550, 70, "target 2");
+                               validTargetSelected = TRUE;
+                           }
+                           else
+                           {
+                               //user clicked on a non-target / non-highlighted cell
+                               outtextxy(550, 80, "non target");
+                           }
+                       }
+                    }             
+               } //end while for target selection
+               
+               //When we exit the above loop, clickedTarget contains the address of a valid target cell
+                   
+             //  outtextxy(500, 50, "Outta target loop");
+               
+               //set values for next turn
                turn = turn == BLUE ? RED : BLUE; 
                strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
-               //GetClickedPiece();
+
            }
        }
    }

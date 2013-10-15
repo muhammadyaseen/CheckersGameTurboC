@@ -56,6 +56,8 @@ PtrCell GetClickedCell(int X, int Y, PtrBoard board)
         
         }
     }
+    
+    return NULL;
 }
 
 
