@@ -52,5 +52,33 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     setcolor(BLUE);
 }
 
+void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrCell target1, PtrCell target2, int turn)
+{
+    //change prev cell data
+               
+    clickedCell->IsOccupied = FALSE;
+
+    //change target cell data
+
+    clickedTarget->Piece = clickedCell->Piece;
+    clickedTarget->IsOccupied = TRUE;
+
+    clickedCell->Piece = NULL;
+
+    //re draw prev cell
+
+    DrawCell( clickedCell, clickedCell->Row, clickedCell->Column );
+
+    //redraw target cells in normal white color
+
+    if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
+    if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
+
+    //draw piece on target cell
+
+    DrawPiece( board, clickedTarget, clickedTarget->Piece->ID, turn );
+
+}
+
 #endif	/* PIECE_H */
 

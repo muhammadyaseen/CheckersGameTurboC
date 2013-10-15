@@ -10,9 +10,7 @@
 Board CheckersBoard;
 
 int main(void)
-{
-   int mode, driver = DETECT;
-   
+{  
    initwindow(1200, 900);
    
    //Draws the initial state of board
@@ -79,32 +77,7 @@ int main(void)
                                   
                //now we have to move the piece to clicked cell
                
-               //change prev cell data
-               
-               clickedCell->IsOccupied = FALSE;
-               
-               //clickedCell->Piece = NULL
-               
-               //change target cell data
-                       
-               clickedTarget->Piece = clickedCell->Piece;
-               clickedTarget->IsOccupied = TRUE;
-               
-               clickedCell->Piece = NULL;
-               
-               //re draw prev cell
-               
-               DrawCell( clickedCell, clickedCell->Row, clickedCell->Column );
-               
-               //redraw target cells in normal white color
-               
-               if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
-               if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
-               
-               //draw piece on target cell
-               
-               DrawPiece( &CheckersBoard, clickedTarget, clickedTarget->Piece->ID, turn );
-               
+               MovePiece(&CheckersBoard, clickedCell, clickedTarget, target1, target2, turn );
                
                //set values for next turn
                turn = turn == BLUE ? RED : BLUE; 
@@ -113,8 +86,6 @@ int main(void)
            }
        }
    }
-   
-   //getche();
    
    closegraph();
       
