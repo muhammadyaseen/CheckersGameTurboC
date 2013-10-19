@@ -16,7 +16,7 @@ void DrawBoard(PtrBoard);
 void DrawBoard(PtrBoard board)
 {
    //Cells will be of blue border   
-   setcolor(BLUE);
+   setcolor(BORDER_COLOR);
    
    //goes from 0 to ROW*COL, we are using it to keep track / index of cells array in board
    int cellNo = 0;

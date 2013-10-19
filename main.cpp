@@ -37,7 +37,7 @@ int main(void)
        getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
        
        // if the button was clicked, then we check if the correct piece was selected
-       if ( !( mouseX == -1 && mouseY == -1) )
+       if ( !( mouseX == -1 && mouseY == -1 ) )
        {
            //for ex, it this is blue's turn but user clicks on a red piece
            //this check tests that scenario

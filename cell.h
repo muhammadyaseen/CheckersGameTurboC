@@ -27,7 +27,7 @@ void DrawCell(PtrCell cellToDraw, int row, int col)
                 
         setfillstyle(SOLID_FILL, WHITE);
         
-        floodfill( seedX, seedY, BLUE );       
+        floodfill( seedX, seedY, BORDER_COLOR );       
     }
 }
 
@@ -131,11 +131,11 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
 
        if ( (*target1) != NULL && (*target1)->IsOccupied == 0 )
        {
-            floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BLUE );
+            floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BORDER_COLOR );
        }
        if ( (*target2) != NULL && (*target2)->IsOccupied == 0 )
        {
-            floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BLUE );
+            floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BORDER_COLOR );
        }
 
        return TRUE;

@@ -8,9 +8,9 @@
 #define RADIUS 25
 #define DRAW_START_UP 3    // draw piece in first two rows
 #define DRAW_START_DOWN 4  // draw piece in last two rows
+#define BORDER_COLOR CYAN
 
-
-enum PieceType { Red, Black };
+enum PieceType { Red, Blue };
 enum PieceState { OnBoard, Removed };
 enum GameState { Welcome, Playing, PlayerWin, CPUWin };
 

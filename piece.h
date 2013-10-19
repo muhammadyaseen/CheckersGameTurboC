@@ -19,7 +19,7 @@ void DrawPiece(PtrBoard, PtrCell, int, int);
 void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
 {
     //Is this a red or blue piece ?
-    PieceType type = color == RED ? Red : Black ;
+    PieceType type = color == RED ? Red : Blue ;
 
     // configure the properties of associated cell
     cell->IsOccupied = 1;  //this cell now has a piece belonging to it.
@@ -49,7 +49,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     floodfill( circleX, circleY, color );
     
     // reset draw color to draw the next rectangle / cell
-    setcolor(BLUE);
+    setcolor(BORDER_COLOR);
 }
 
 void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrCell target1, PtrCell target2, int turn)
