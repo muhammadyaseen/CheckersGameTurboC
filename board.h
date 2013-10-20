@@ -44,7 +44,7 @@ void DrawBoard(PtrBoard board)
             DrawCell( &board->Cells[cellNo], row, col );
             
             // if it is a 'white' cell      AND        this row should have Pieces 
-            if ( ( (col + row )  % 2 == 0 ) && ( row < DRAW_START_UP || row > DRAW_START_DOWN) )
+            if ( ( (col + row )  % 2 != 0 ) && ( row < DRAW_START_UP || row > DRAW_START_DOWN) )
             {
                 // pieces in first two rows are red, last two rows they're blue
                 int drawColor = row < DRAW_START_UP ? RED : BLUE;
