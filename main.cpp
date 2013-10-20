@@ -22,7 +22,7 @@ int main(void)
    
    int turn = RED;
    
-   int mouseX, mouseY;
+   int mouseX, mouseY, selectionChanged = FALSE;
    
    char * turnColor  = (char *)malloc( 5 * sizeof(char) );
    
@@ -34,8 +34,11 @@ int main(void)
        strcmp(turnColor, "BLUE") ? outtextxy(600, 110, "RED's turn") : outtextxy(600, 110,"BLUE's turn");
        
        //check if correct piece is selected
-       getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
-       
+       if ( !selectionChanged )
+       {
+           //selectionChanged = FALSE;
+           getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
+       }
        // if the button was clicked, then we check if the correct piece was selected
        if ( !( mouseX == -1 && mouseY == -1 ) )
        {
@@ -56,10 +59,13 @@ int main(void)
                PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
                
                PtrCell target1, target2;
+               PtrCell jumpedCell1, jumpedCell2;
                
                if ( !IdentifyAndHighlightTargets(turn, clickedCell, &target1, &target2, &CheckersBoard ) )
+               {
+                   selectionChanged = FALSE;
                    continue;
-               
+               }
                //now, targets have been identified and highlighted
                //we need to intercept clicks on target
                
@@ -70,7 +76,7 @@ int main(void)
                //until the the mouse is clicked, this loop will keep on polling the device
                int targetSelected = 0;
                
-               while( ! ( targetSelected = InterceptTargetClicks(&clickedTarget, target1, target2, turn, &CheckersBoard) ) )
+               while( ! ( targetSelected = InterceptTargetClicks(&clickedTarget, target1, target2, turn, &CheckersBoard, &mouseX, &mouseY) ) )
                {
                   //well, we can wait till the user selects a target
                } //end while for target selection
@@ -86,9 +92,13 @@ int main(void)
                    //set values for next turn
                    turn = turn == BLUE ? RED : BLUE; 
                    strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
+                   
+                   selectionChanged = FALSE;
+                   
                }
                else
                {
+                   selectionChanged = TRUE;
                }
 
            }
