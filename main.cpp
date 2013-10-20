@@ -68,7 +68,9 @@ int main(void)
                
                //this forces the user to select a valid target
                //until the the mouse is clicked, this loop will keep on polling the device
-               while( !InterceptTargetClicks(&clickedTarget, target1, target2, &CheckersBoard) )
+               int targetSelected = 0;
+               
+               while( ! ( targetSelected = InterceptTargetClicks(&clickedTarget, target1, target2, turn, &CheckersBoard) ) )
                {
                   //well, we can wait till the user selects a target
                } //end while for target selection
@@ -77,11 +79,17 @@ int main(void)
                                   
                //now we have to move the piece to clicked cell
                
-               MovePiece(&CheckersBoard, clickedCell, clickedTarget, target1, target2, turn );
-               
-               //set values for next turn
-               turn = turn == BLUE ? RED : BLUE; 
-               strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
+               if ( targetSelected != CHANGE_PIECE )
+               {
+                   MovePiece(&CheckersBoard, clickedCell, clickedTarget, target1, target2, turn );
+
+                   //set values for next turn
+                   turn = turn == BLUE ? RED : BLUE; 
+                   strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
+               }
+               else
+               {
+               }
 
            }
        }

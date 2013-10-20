@@ -143,9 +143,10 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
 
 }
 
-int InterceptTargetClicks(PtrCell *clickedTarget, PtrCell target1, PtrCell target2, PtrBoard board)
+int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell target2, int turn, PtrBoard board)
 {
     int targetX, targetY;
+    
     getmouseclick(WM_LBUTTONDOWN, targetX, targetY);
 
     if ( ! ( targetX == -1 && targetY == -1 ) )
@@ -175,6 +176,21 @@ int InterceptTargetClicks(PtrCell *clickedTarget, PtrCell target1, PtrCell targe
            else
            {
                //user clicked on a non-target / non-highlighted cell
+               
+               //1. User clicked on an other piece (To select a different piece for move)
+               //   In this case, we should Re-Identify the targets for newly selected piece              
+               
+               //Identify if a piece whose 'turn' it is was selected or some other thing
+                              
+               //
+               
+               if ( (*clickedTarget)->OccupiedBy == turn)
+               {
+                   //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
+                   //we need to identify targets for this new piece
+                   outtextxy(550, 80, "change subject");
+                   return CHANGE_PIECE;
+               }
                outtextxy(550, 80, "non target");
                return FALSE;
            }
