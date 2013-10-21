@@ -29,7 +29,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     board->Pieces[pieceNo].State = OnBoard;
     board->Pieces[pieceNo].Type = type;
     
-    board->Pieces[pieceNo].ID = pieceNo;
+    board->Pieces[pieceNo].Index = pieceNo;
 
     //store a reference to this piece in cell
     cell->Piece = &board->Pieces[pieceNo];
@@ -76,8 +76,28 @@ void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrC
 
     //draw piece on target cell
 
-    DrawPiece( board, clickedTarget, clickedTarget->Piece->ID, turn );
+    DrawPiece( board, clickedTarget, clickedTarget->Piece->Index, turn );
 
+}
+
+movePieceAI(PtrBoard board)
+{        
+    // Array to hold all the pieces the AI can control
+    Piece allRedPieces[ PIECES_COUNT/2 ];
+    
+    int numberOfPieces = 0; // Holds the number of pieces for use in for loops
+    
+    // Goes through all the pieces on the board
+    for (int i = 0; i < PIECES_COUNT; i++)
+    {   
+        // Checks to see if the piece color is indeed blue and on the
+        // the board, that is not removed or "jumped over".
+        if (board->Pieces[i]->Type == PieceType.Blue &&   
+            board->Pieces[i]->State == PieceState.OnBoard)
+        {
+            allRedPieces[ numberOfPieces++ ];
+        }
+    }
 }
 
 #endif	/* PIECE_H */

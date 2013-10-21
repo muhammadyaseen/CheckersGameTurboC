@@ -3,9 +3,10 @@
 
 #define ROW 8
 #define COL 8
-#define WIDTH 75
-#define HEIGHT 75
-#define RADIUS 25
+#define PIECES_COUNT 24    // 12 for 6x6 24 for 8x8
+#define WIDTH 75           // Width of each cell
+#define HEIGHT 75          // Height of each cell
+#define RADIUS 25          // Radius of the pieces
 #define DRAW_START_UP 3    // draw piece in first two rows
 #define DRAW_START_DOWN 4  // draw piece in last two rows
 #define BORDER_COLOR CYAN
@@ -27,7 +28,7 @@ typedef struct Cell * PtrCell;
 typedef struct Piece * PtrPiece;
 
 struct Cell {
-    int ID;
+    int Index;
     int Top;
     int Right;
     int Bottom;
@@ -45,7 +46,7 @@ struct Cell {
 };
 
 struct Piece {
-    int ID;
+    int Index;
     PieceType Type;
     int IsKing;
     PieceState State;
@@ -59,9 +60,8 @@ struct Board {
     
     Cell Cells[ ROW * COL ];
     
-    //12 for 6x6 24 for 8x8
     //Each piece can be on one and only one cell
-    Piece Pieces[ 24 ]; 
+    Piece Pieces[ PIECES_COUNT ]; 
     
 };
 
