@@ -3,7 +3,6 @@
 
 #include "datastructures.h"
 
-
 void DrawPiece(PtrBoard, PtrCell, int, int);
 
 /* 
@@ -17,7 +16,10 @@ void DrawPiece(PtrBoard, PtrCell, int, int);
  */
 
 void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
-{
+{    
+    //store a reference to the cell in piece array
+    board->Pieces[pieceNo].Cell = cell;
+    
     //Is this a red or blue piece ?
     PieceType type = color == RED ? Red : Blue ;
 
@@ -77,27 +79,92 @@ void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrC
     //draw piece on target cell
 
     DrawPiece( board, clickedTarget, clickedTarget->Piece->Index, turn );
-
+    
 }
 
-movePieceAI(PtrBoard board)
-{        
+void MovePieceForAI(PtrBoard board, PtrCell selectedCell , PtrCell target, int turn)
+{
+    //change previous cell data               
+    selectedCell->IsOccupied = FALSE;
+
+    //change target cell data
+    target->Piece = selectedCell->Piece;
+    target->IsOccupied = TRUE;
+
+    selectedCell->Piece = NULL;
+
+    //re draw previous cell
+    DrawCell( selectedCell, selectedCell->Row, selectedCell->Column );
+
+    //redraw target cells in normal white color
+
+//    if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
+//    if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
+
+    //draw piece on target cell
+    DrawPiece( board, target, target->Piece->Index, turn );
+    
+}
+
+void PlayAITurn(PtrBoard board, int turn)
+{         
     // Array to hold all the pieces the AI can control
-    Piece allRedPieces[ PIECES_COUNT/2 ];
+    Piece redPieceCells[ PIECES_COUNT/2 ];
     
     int numberOfPieces = 0; // Holds the number of pieces for use in for loops
     
     // Goes through all the pieces on the board
-    for (int i = 0; i < PIECES_COUNT; i++)
+    for (int i = 0; i < (ROW * COL); i++)
     {   
         // Checks to see if the piece color is indeed blue and on the
         // the board, that is not removed or "jumped over".
-        if (board->Pieces[i]->Type == PieceType.Blue &&   
-            board->Pieces[i]->State == PieceState.OnBoard)
+        if (board->Pieces[i].Type == Blue &&   
+            board->Pieces[i].State == OnBoard)
         {
-            allRedPieces[ numberOfPieces++ ];
+            redPieceCells[ numberOfPieces++ ] =  board->Pieces[i];
         }
-    }
+    
+    } // End of RedPieces gathering for-loop
+    
+    Moves possibleMoves[numberOfPieces * 2];
+    int numberOfMoves = 0;
+    
+    PtrCell target1, target2;
+    
+    for (int i = 0; i < numberOfPieces; i++)
+    {
+        // Enters when the function does return targets
+        if (IdentifyTargets(turn, redPieceCells[i].Cell, &target1, &target2, board))
+        {
+            // If a target exists, it stores all the data in the PossibleMoves 
+            // array
+            if ( !(target1 == NULL) )
+            {
+                possibleMoves[numberOfMoves].Piece = &redPieceCells[i];
+                possibleMoves[numberOfMoves].CurrentCell = redPieceCells[i].Cell;
+                possibleMoves[numberOfMoves].TargetCell = target1;
+                
+                numberOfMoves++;
+            }
+            
+            if ( !(target2 == NULL) )
+            {
+                possibleMoves[numberOfMoves].Piece = &redPieceCells[i];
+                possibleMoves[numberOfMoves].CurrentCell = redPieceCells[i].Cell;
+                possibleMoves[numberOfMoves].TargetCell = target2;
+                
+                numberOfMoves++;
+            }
+        }
+        
+    } // End of PossibleMoves calculating for-loop
+    
+    // Randomly select a move
+    int moveIndex = rand() % numberOfMoves;
+    
+    // Moves the piece
+    MovePieceForAI(board, possibleMoves[moveIndex].CurrentCell,
+                   possibleMoves[moveIndex].TargetCell, turn);
 }
 
 #endif	/* PIECE_H */

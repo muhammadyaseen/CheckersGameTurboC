@@ -27,6 +27,8 @@ typedef struct Board * PtrBoard;
 typedef struct Cell * PtrCell;
 typedef struct Piece * PtrPiece;
 
+typedef struct Moves Moves;
+
 struct Cell {
     int Index;
     int Top;
@@ -65,6 +67,11 @@ struct Board {
     
 };
 
+struct Moves {
+    PtrPiece Piece;      // Pointer to the piece that will make the move
+    PtrCell TargetCell;  // Pointer to the cell the piece will be moved to
+    PtrCell CurrentCell; // Pointer to the cell the piece is currently on
+};
 
 #endif
 

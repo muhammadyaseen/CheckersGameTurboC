@@ -40,6 +40,7 @@ void DrawBoard(PtrBoard board)
             board->Cells[cellNo].Row = row;
             board->Cells[cellNo].Column = col;
             
+            
             //Draws the cell configured above
             DrawCell( &board->Cells[cellNo], row, col );
             

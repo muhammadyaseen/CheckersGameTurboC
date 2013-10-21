@@ -93,6 +93,42 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
     }
 }
 
+int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
+{
+       //identify targets : Piece can only move in diagonals ( in white cells )
+
+       //max 2 targets are possible for a move, minimum 0
+
+       int target1Row, target2Row, target1Col, target2Col;
+
+       if ( turn == RED )   //red piece go downwards
+       {
+            target1Row = selectedCell->Row + 1;
+            target2Row = selectedCell->Row + 1;
+
+            target1Col = selectedCell->Column + 1;
+            target2Col = selectedCell->Column - 1;    
+       }
+       else //blue pieces go downwards
+       {
+            target1Row = selectedCell->Row - 1;
+            target2Row = selectedCell->Row - 1;
+
+            target1Col = selectedCell->Column + 1;
+            target2Col = selectedCell->Column - 1; 
+       }
+
+       *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE);
+
+       *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE);
+
+       // If both targets are null, user must again select the piece to complete the move
+       if ( (*target1) == NULL && (*target2) == NULL )
+           return FALSE;
+       
+       return TRUE;
+       //now, targets have been identified and highlighted
+}
 
 int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
 {
@@ -123,16 +159,18 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
 
        *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE);
 
-       setfillstyle(SOLID_FILL, YELLOW);
-
-       //if both targets are null, user must again select the piece to complete the move
+       // If both targets are null, user must again select the piece to complete the move
        if ( (*target1) == NULL && (*target2) == NULL )
            return FALSE;
+       
+       // If either of the target exists and is not occupied
+       setfillstyle(SOLID_FILL, YELLOW);
 
        if ( (*target1) != NULL && (*target1)->IsOccupied == 0 )
        {
             floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BORDER_COLOR );
        }
+       
        if ( (*target2) != NULL && (*target2)->IsOccupied == 0 )
        {
             floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BORDER_COLOR );
