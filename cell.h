@@ -5,6 +5,8 @@
 
 
 void DrawCell(PtrCell, int, int);
+void IdentifyAndHighlightJumpDestinations(PtrCell *, PtrCell *, PtrCell, int, PtrBoard);
+
 
 /* @description : Used to draw the rectangular ceell on board.
  * 
@@ -53,7 +55,6 @@ PtrCell GetClickedCell(int X, int Y, PtrBoard board)
             //line(board->Cells[i].Right, board->Cells[i].Top, board->Cells[i].Left, board->Cells[i].Bottom );
             
             return &board->Cells[i];
-        
         }
     }
     
@@ -70,7 +71,7 @@ PtrCell GetClickedCell(int X, int Y, PtrBoard board)
  *                      rule checking) or for some other purpose.
  * @param - board - Pointer to main checkers board instance
  */
-PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALSE, int turn = 0 )
+PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALSE, int turn = 0, int forJumpTarget = FALSE)
 {
     if ( row >= ROW || col >= COL )
         return NULL;
@@ -79,7 +80,15 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
     {
         if ( board->Cells[i].Row == row && board->Cells[i].Column == col )
         {
-            //TODO: Check for 'OccupiedBy' before returning
+            if (forJumpTarget) 
+            {
+                //If cell is not occupied (i.e. empty white cell) or cell is occupied by opponent, then this cell is fit as a target
+                if ( !board->Cells[i].IsOccupied )
+                    return &board->Cells[i];
+                else
+                    return NULL;
+            }
+                        
             if (forTarget) 
             {
                 //If cell is not occupied (i.e. empty white cell) or cell is occupied by opponent, then this cell is fit as a target
@@ -92,6 +101,8 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
             return &board->Cells[i];
         }
     }
+    
+    return NULL;
 }
 
 int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
@@ -131,7 +142,7 @@ int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *t
        //now, targets have been identified and highlighted
 }
 
-int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
+int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1, PtrCell * target2, PtrBoard board)
 {
        //identify targets : Piece can only move in diagonals ( in white cells )
 
@@ -160,19 +171,17 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
 
        *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
 
-       // If both targets are null, user must again select the piece to complete the move
+       setfillstyle(SOLID_FILL, YELLOW);
+
+       //if both targets are null, user must again select the piece to complete the move
        if ( (*target1) == NULL && (*target2) == NULL )
            return FALSE;
-       
-       // If either of the target exists and is not occupied
-       setfillstyle(SOLID_FILL, YELLOW);
 
        //in case of empty white cells
        if ( (*target1) != NULL && (*target1)->IsOccupied == 0 )
        {
             floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BORDER_COLOR );
        }
-       
        if ( (*target2) != NULL && (*target2)->IsOccupied == 0 )
        {
             floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BORDER_COLOR );
@@ -181,22 +190,42 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
        //in case when white cell is occupied by opponent piece
        //we need to figure out whether this cell could be jumped over or not.
        
-       if ( (*target1) != NULL && (*target1)->IsOccupied && (*target1)->OccupiedBy != turn )
-       {
-           setfillstyle(LINE_FILL, YELLOW);
-           floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BORDER_COLOR );
-       }
+       //In case of a jump, 'target1' and 'target2' represent the cell (or pieces) that will be jumped over,
+       //i.e. the final target or destination of the move is one diagonal ahead of  'target1' and 'target2'
+       //we must make sure that that "final target or destination" is available for the move to be considered
+       //valid and possible
+       //   T |  | T
+       //   ---------
+       //     | J|   
+       //   ---------
+       //   X |  | X
+       // depending on the position and color of X the destination 'T' for a piece 'X' that jumps over 'J' could be different 
+         
+       //there are two 'final destinations' because there could be two jumps possible
+       //for ex, both 'target1' and 'target2' have an opponent cell
        
-       if ( (*target2) != NULL && (*target2)->IsOccupied && (*target2)->OccupiedBy != turn )
-       {
-           setfillstyle(LINE_FILL, YELLOW);
-           floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BORDER_COLOR );
-       }
+       PtrCell jumpDest1 = (PtrCell)NULL; //final target 1
        
+       outtextxy(610, 250, "Iding dest 1 not null");
+       
+       IdentifyAndHighlightJumpDestinations(target1, &jumpDest1, clickedCell, turn, board );
+       
+       if ( jumpDest1 != NULL )
+           outtextxy(610, 320, "Dest 1 not null");
+       else
+           outtextxy(610, 320, "Dest 1 is null");
+       
+       PtrCell jumpDest2 = (PtrCell)NULL; //final target 2
 
+       IdentifyAndHighlightJumpDestinations(target2, &jumpDest2, clickedCell, turn, board );
+       
+       if ( jumpDest2 != NULL )
+           outtextxy(620, 340, "Dest 2 not null");
+       else
+           outtextxy(620, 340, "Dest 2 is null");
+       
        return TRUE;
        //now, targets have been identified and highlighted
-
 }
 
 int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell target2, int turn, PtrBoard board, int * targetX, int * targetY)
@@ -259,5 +288,88 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell targ
     
     return FALSE;
 }
+
+/*
+ * @param - jumpedOverCell - This is the cell that 'would be' jumped over if the conditions are true i.e. it is not yet confirmed that
+ *                           this cells is appropriate for jump
+ */
+void IdentifyAndHighlightJumpDestinations(PtrCell * jumpedOverCell, PtrCell * finalDestination, PtrCell clickedCell, int turn, PtrBoard board)
+{
+    if ( (*jumpedOverCell) != NULL && (*jumpedOverCell)->IsOccupied && (*jumpedOverCell)->OccupiedBy != turn )
+    {   
+           //calculate the co-ords of final destination for the jump
+           
+           if ( turn == BLUE ) //blue pieces go up
+           {
+               if ( clickedCell->Column < (*jumpedOverCell)->Column )
+               {
+                   //target is two rows forward and two columns right
+                   
+                   (*finalDestination) = GetCellByRowColumn( clickedCell->Row - 2, clickedCell->Column + 2, board, FALSE, turn, TRUE );
+                   
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+               
+               if ( clickedCell->Column > (*jumpedOverCell)->Column )
+               {
+                   //target is two rows forward and two columns left
+                   
+                    (*finalDestination) = GetCellByRowColumn( clickedCell->Row - 2, clickedCell->Column - 2, board, FALSE, turn, TRUE );
+                                     
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+           }
+           
+           if ( turn == RED ) //red pieces go down
+           {
+               if ( clickedCell->Column < (*jumpedOverCell)->Column )
+               {
+                   //target is two rows below and two columns right
+                   
+                   (*finalDestination) = GetCellByRowColumn( clickedCell->Row + 2, clickedCell->Column + 2, board, FALSE, turn, TRUE );
+                   
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+               
+               if ( clickedCell->Column > (*jumpedOverCell)->Column )
+               {
+                   //target is two rows below and two columns right
+                   
+                    (*finalDestination) = GetCellByRowColumn( clickedCell->Row + 2, clickedCell->Column - 2, board, FALSE, turn, TRUE );
+                                     
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+           }
+       }
+}
+
 #endif	/* CELL_H */
 
