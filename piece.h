@@ -21,7 +21,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     board->Pieces[pieceNo].Cell = cell;
     
     //Is this a red or blue piece ?
-    PieceType type = color == RED ? Red : Blue ;
+    int type = color == RED ? RED : BLUE ;
 
     // configure the properties of associated cell
     cell->IsOccupied = 1;  //this cell now has a piece belonging to it.
