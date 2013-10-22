@@ -70,7 +70,7 @@ PtrCell GetClickedCell(int X, int Y, PtrBoard board)
  *                      rule checking) or for some other purpose.
  * @param - board - Pointer to main checkers board instance
  */
-PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALSE )
+PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALSE, int turn = 0 )
 {
     if ( row >= ROW || col >= COL )
         return NULL;
@@ -82,7 +82,8 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
             //TODO: Check for 'OccupiedBy' before returning
             if (forTarget) 
             {
-                if ( ! board->Cells[i].IsOccupied )
+                //If cell is not occupied (i.e. empty white cell) or cell is occupied by opponent, then this cell is fit as a target
+                if ( !board->Cells[i].IsOccupied || board->Cells[i].OccupiedBy != turn )
                     return &board->Cells[i];
                 else
                     return NULL;
@@ -155,9 +156,9 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
             target2Col = clickedCell->Column - 1; 
        }
 
-       *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE);
+       *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE, turn);
 
-       *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE);
+       *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
 
        // If both targets are null, user must again select the piece to complete the move
        if ( (*target1) == NULL && (*target2) == NULL )
@@ -166,6 +167,7 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
        // If either of the target exists and is not occupied
        setfillstyle(SOLID_FILL, YELLOW);
 
+       //in case of empty white cells
        if ( (*target1) != NULL && (*target1)->IsOccupied == 0 )
        {
             floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BORDER_COLOR );
@@ -175,22 +177,37 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell *target1,
        {
             floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BORDER_COLOR );
        }
+       
+       //in case when white cell is occupied by opponent piece
+       //we need to figure out whether this cell could be jumped over or not.
+       
+       if ( (*target1) != NULL && (*target1)->IsOccupied && (*target1)->OccupiedBy != turn )
+       {
+           setfillstyle(LINE_FILL, YELLOW);
+           floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BORDER_COLOR );
+       }
+       
+       if ( (*target2) != NULL && (*target2)->IsOccupied && (*target2)->OccupiedBy != turn )
+       {
+           setfillstyle(LINE_FILL, YELLOW);
+           floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BORDER_COLOR );
+       }
+       
 
        return TRUE;
        //now, targets have been identified and highlighted
 
 }
 
-int InterceptTargetClicks(PtrCell *clickedTarget, PtrCell target1, PtrCell target2, PtrBoard board)
-{
-    int targetX, targetY;
-    getmouseclick(WM_LBUTTONDOWN, targetX, targetY);
+int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell target2, int turn, PtrBoard board, int * targetX, int * targetY)
+{   
+    getmouseclick(WM_LBUTTONDOWN, *targetX, *targetY);
 
-    if ( ! ( targetX == -1 && targetY == -1 ) )
+    if ( ! ( *targetX == -1 && *targetY == -1 ) )
     {
        //check whether the correct target is selecting using X,Y co-ords
 
-       *clickedTarget = GetClickedCell(targetX, targetY, board );
+       *clickedTarget = GetClickedCell(*targetX, *targetY, board );
 
        if ( (*clickedTarget) != NULL ) //this check ensures that at least user clicked on a 'cell' and no where else on screen
        {
@@ -213,6 +230,27 @@ int InterceptTargetClicks(PtrCell *clickedTarget, PtrCell target1, PtrCell targe
            else
            {
                //user clicked on a non-target / non-highlighted cell
+               
+               //1. User clicked on an other piece (To select a different piece for move)
+               //   In this case, we should Re-Identify the targets for newly selected piece              
+               
+               //Identify if a piece whose 'turn' it is was selected or some other thing
+                              
+               //
+               
+               if ( (*clickedTarget)->OccupiedBy == turn)
+               {
+                   //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
+                   //we need to identify targets for this new piece
+                   outtextxy(550, 80, "change subject");
+                   
+                       //redraw target cells in normal white color
+
+                   if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
+                   if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
+
+                   return CHANGE_PIECE;
+               }
                outtextxy(550, 80, "non target");
                return FALSE;
            }

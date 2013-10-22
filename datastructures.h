@@ -10,6 +10,7 @@
 #define DRAW_START_UP 3    // draw piece in first two rows
 #define DRAW_START_DOWN 4  // draw piece in last two rows
 #define BORDER_COLOR CYAN
+#define CHANGE_PIECE 100
 
 enum PieceType { Red, Blue };
 enum PieceState { OnBoard, Removed };
@@ -48,6 +49,7 @@ struct Cell {
 };
 
 struct Piece {
+    
     int Index;
     int Type;
     int IsKing;

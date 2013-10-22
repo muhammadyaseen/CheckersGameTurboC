@@ -64,6 +64,7 @@ void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrC
 
     clickedTarget->Piece = clickedCell->Piece;
     clickedTarget->IsOccupied = TRUE;
+    clickedTarget->OccupiedBy = turn;
 
     clickedCell->Piece = NULL;
 
