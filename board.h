@@ -35,7 +35,7 @@ void DrawBoard(PtrBoard board)
             board->Cells[cellNo].Bottom =  HEIGHT * (1+row);
             board->Cells[cellNo].ID = cellNo;
             
-            board->Cells[cellNo].IsOccupied = 0;
+            board->Cells[cellNo].IsOccupied = FALSE;
             
             board->Cells[cellNo].Row = row;
             board->Cells[cellNo].Column = col;
