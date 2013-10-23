@@ -265,14 +265,16 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell targ
            {
                //target one was selected as destination
                outtextxy(550, 60, "target 1");
-               return TRUE;
+               //return TRUE;
+               return TARGET_CLICK_1;
 
            } 
            else if (  target2 != NULL && ( (*clickedTarget)->Row == target2->Row && (*clickedTarget)->Column == target2->Column ) )
            {
-               //target one was selected as destination
+               //target two was selected as destination
                outtextxy(550, 70, "target 2");
-               return TRUE;
+               //return TRUE;
+               return TARGET_CLICK_2;
            }
            else
            {

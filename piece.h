@@ -168,7 +168,33 @@ void PlayAITurn(PtrBoard board, int turn)
                    possibleMoves[moveIndex].TargetCell, turn);
 }
 
-//created 'jump' branch
+void DrawIndicator(PtrBoard board)
+{
+    char * numberRed = (char *)malloc( 3 );
+    char * numberBlue = (char *)malloc( 3 );
+    
+    int bluePieces = 0, redPieces = 0;
+    
+    for ( int i = 0; i < PIECES_COUNT; i++)
+    {
+        if ( board->Pieces[i].Type == BLUE && board->Pieces[i].State == OnBoard )
+            bluePieces++;
+        
+        if ( board->Pieces[i].Type == RED && board->Pieces[i].State == OnBoard )
+            redPieces++;
+    }
+    
+    int x = 650, y = 500;
+    
+    outtextxy(x, y, "RED : ");
+    outtextxy( x, y+30, itoa(redPieces, numberRed, 10) );
+    
+    outtextxy(x, y+60, "BLUE : ");
+    outtextxy( x, y+90, itoa(bluePieces, numberBlue, 10) );
+    
+    free(numberRed);
+    free(numberBlue);
+}
 
 #endif	/* PIECE_H */
 
