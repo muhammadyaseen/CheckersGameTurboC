@@ -59,15 +59,24 @@ int main(void)
                //user has selected the correct piece, now we have to identify the possible targets for the move
                PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
                
-               PtrCell target1, target2;
-               PtrCell jumpedCell1, jumpedCell2;
+               PtrCell target1, target2; //represent cells with jumped over pieces in case of a jump, empty highlighted cells otherwise
+               PtrCell jumpedCell1, jumpedCell2; // represent targets in case of jump, NULL otherwise
                
-               if ( !IdentifyAndHighlightTargets(turn, clickedCell, &target1, &target2, &CheckersBoard ) )
+               jumpedCell1 = jumpedCell2 = GetCellByRowColumn(0,0, &CheckersBoard, FALSE, turn, FALSE);
+               
+               if ( !IdentifyAndHighlightTargets(turn, clickedCell, &target1, &target2, &jumpedCell1 , &jumpedCell2, &CheckersBoard ) )
                {
                    selectionChanged = FALSE;
                    continue;
                }
                //now, targets have been identified and highlighted
+//                                             
+//               PrintRC(target1, 650, 360);
+//               PrintRC(target2, 650, 400);
+//               
+//               PrintRC(jumpedCell1, 650, 440);
+//               PrintRC(jumpedCell2, 650, 480);
+               
                //we need to intercept clicks on target
                
                //IDenftify which target was selected

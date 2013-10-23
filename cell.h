@@ -82,7 +82,7 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
         {
             if (forJumpTarget) 
             {
-                //If cell is not occupied (i.e. empty white cell) or cell is occupied by opponent, then this cell is fit as a target
+                //If cell is not occupied (i.e. empty white cell) 
                 if ( !board->Cells[i].IsOccupied )
                     return &board->Cells[i];
                 else
@@ -142,7 +142,7 @@ int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *t
        //now, targets have been identified and highlighted
 }
 
-int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1, PtrCell * target2, PtrBoard board)
+int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1, PtrCell * target2,PtrCell * jumpedCell1, PtrCell * jumpedCell2, PtrBoard board)
 {
        //identify targets : Piece can only move in diagonals ( in white cells )
 
@@ -211,18 +211,36 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1
        IdentifyAndHighlightJumpDestinations(target1, &jumpDest1, clickedCell, turn, board );
        
        if ( jumpDest1 != NULL )
+       {
            outtextxy(610, 320, "Dest 1 not null");
+           //target is this destination
+           
+           (*jumpedCell1) = (*target1);
+           (*target1) = jumpDest1;    
+       }
        else
+       {
            outtextxy(610, 320, "Dest 1 is null");
+           if ( (*target1) != NULL && (*target1)->IsOccupied ) (*target1) = NULL;
+       }
        
        PtrCell jumpDest2 = (PtrCell)NULL; //final target 2
 
        IdentifyAndHighlightJumpDestinations(target2, &jumpDest2, clickedCell, turn, board );
        
        if ( jumpDest2 != NULL )
+       {
            outtextxy(620, 340, "Dest 2 not null");
+           //target is this destination
+           
+           (*jumpedCell2) = (*target2);
+           (*target2) = jumpDest2; 
+       }
        else
+       {
            outtextxy(620, 340, "Dest 2 is null");
+           if ( (*target2) != NULL && (*target2)->IsOccupied ) (*target2) = NULL;
+       }
        
        return TRUE;
        //now, targets have been identified and highlighted
@@ -369,6 +387,26 @@ void IdentifyAndHighlightJumpDestinations(PtrCell * jumpedOverCell, PtrCell * fi
                }
            }
        }
+}
+
+void PrintRC(PtrCell cell, int x, int y)
+{
+    char * r = (char *)malloc( 5 );
+    char * c = (char *)malloc( 5 );
+    
+    if ( cell != (PtrCell)NULL )  
+    {
+        outtextxy(x,y, "Row : " );
+        outtextxy(x+50,y, itoa(cell->Row,r, 10) );
+        
+        outtextxy(x,y+20, "Col : " );
+        outtextxy(x+50,y+20, itoa(cell->Column,c,10) );
+    }
+    else
+    {
+        outtextxy(x, y, "Row : N");
+        outtextxy(x,y+20, "Col : N" );
+    }
 }
 
 #endif	/* CELL_H */
