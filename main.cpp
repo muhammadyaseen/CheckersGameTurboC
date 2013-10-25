@@ -1,6 +1,7 @@
 #include <graphics.h>
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
 
 #include "datastructures.h"
 #include "cell.h"
@@ -30,6 +31,8 @@ int main(void)
    
    while(true)
    {
+       DrawIndicator(&CheckersBoard);
+       
        //turn indicator
        strcmp(turnColor, "BLUE") ? outtextxy(600, 110, "RED's turn") : outtextxy(600, 110,"BLUE's turn");
        
@@ -54,23 +57,26 @@ int main(void)
                    outtextxy(600, 110,"Select BLUE colored piece");    
            }
            else
-           {
+           {              
                //user has selected the correct piece, now we have to identify the possible targets for the move
                PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
                
-               PtrCell target1, target2;
-               PtrCell jumpedCell1, jumpedCell2;
+               PtrCell target1 = NULL, target2 = NULL; //represent cells with jumped over pieces in case of a jump, empty highlighted cells otherwise
+               PtrCell jumpedCell1 = NULL, jumpedCell2 = NULL; // represent targets in case of jump, NULL otherwise
                
-               if ( !IdentifyAndHighlightTargets(turn, clickedCell, &target1, &target2, &CheckersBoard ) )
+               //jumpedCell1 = jumpedCell2 = GetCellByRowColumn(0,0, &CheckersBoard, FALSE, turn, FALSE);
+               
+               if ( !IdentifyAndHighlightTargets(turn, clickedCell, &target1, &target2, &jumpedCell1 , &jumpedCell2, &CheckersBoard ) )
                {
                    selectionChanged = FALSE;
                    continue;
                }
                //now, targets have been identified and highlighted
+               
                //we need to intercept clicks on target
                
                //IDenftify which target was selected
-               PtrCell clickedTarget;
+               PtrCell clickedTarget = NULL;
                
                //this forces the user to select a valid target
                //until the the mouse is clicked, this loop will keep on polling the device
@@ -82,7 +88,29 @@ int main(void)
                } //end while for target selection
                
                //When we exit the above loop, clickedTarget contains the address of a valid target 
-                                  
+                
+               //in case of jump move, we need to update the 'jumped over' cell data as well;
+               
+               if ( jumpedCell1 != NULL && targetSelected == TARGET_CLICK_1)
+               {
+                   DrawCell(jumpedCell1, jumpedCell1->Row, jumpedCell1->Column);
+                   jumpedCell1->Piece->State = Removed;
+                   jumpedCell1->Piece = NULL;
+                   jumpedCell1->IsOccupied = FALSE;
+                   jumpedCell1->OccupiedBy = 0;
+               }
+               
+               if ( jumpedCell2 != NULL && targetSelected == TARGET_CLICK_2)
+               {
+                   DrawCell(jumpedCell2, jumpedCell2->Row, jumpedCell2->Column);
+                   jumpedCell2->Piece->State = Removed;
+                   jumpedCell2->Piece = NULL;
+                   jumpedCell2->IsOccupied = FALSE;
+                   jumpedCell2->OccupiedBy = 0;
+               }
+               
+               //end jump specific code
+               
                //now we have to move the piece to clicked cell
                
                if ( targetSelected != CHANGE_PIECE )
@@ -104,7 +132,7 @@ int main(void)
            }
        }
    }
-   
+
    closegraph();
       
    return 0;

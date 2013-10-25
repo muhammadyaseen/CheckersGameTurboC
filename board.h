@@ -33,12 +33,14 @@ void DrawBoard(PtrBoard board)
             board->Cells[cellNo].Top = HEIGHT * row;
             board->Cells[cellNo].Right = WIDTH * (1+col);
             board->Cells[cellNo].Bottom =  HEIGHT * (1+row);
-            board->Cells[cellNo].ID = cellNo;
+            board->Cells[cellNo].Index = cellNo;
             
             board->Cells[cellNo].IsOccupied = FALSE;
+            board->Cells[cellNo].OccupiedBy = NONE;
             
             board->Cells[cellNo].Row = row;
             board->Cells[cellNo].Column = col;
+            
             
             //Draws the cell configured above
             DrawCell( &board->Cells[cellNo], row, col );
