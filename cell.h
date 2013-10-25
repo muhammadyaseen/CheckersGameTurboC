@@ -309,9 +309,15 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell targ
     return FALSE;
 }
 
-/*
+/* @descripton - It highlights the final locations of piece in case of a jump move, It also determines whether a jump is possible or not. See @note
  * @param - jumpedOverCell - This is the cell that 'would be' jumped over if the conditions are true i.e. it is not yet confirmed that
  *                           this cells is appropriate for jump
+ * @param - finalDestination - Represents the final location where the piece will be moved to as a result of move, 
+ *                           in case of jump, it is one diagonal ahead of the jumpedOverCell
+ * @param - clickedCell - Represents the either the jumpedOverCell or target of a move, in case of jump and normal move respectively
+ * 
+ * @note - if for this 'jumpedOverCell', 'finalDestination' is not avaialable i.e. to say jump isn't possible, 'finalDestination' will be NULL
+ * 
  */
 void IdentifyAndHighlightJumpDestinations(PtrCell * jumpedOverCell, PtrCell * finalDestination, PtrCell clickedCell, int turn, PtrBoard board)
 {

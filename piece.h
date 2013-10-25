@@ -54,9 +54,18 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     setcolor(BORDER_COLOR);
 }
 
+/* @description - Moves the piece from its current location to a new location during a move
+ * 
+ * @paramm - board - pointer to board state
+ * @param - clickedCell - pointer to the cell user selected with mouse click
+ * @param - target1 - represents one of the possible target cells user might selection as destination of the move
+ * @param - target2 - represents one of the possible target cells user might selection as destination of the move
+ * @paraam - clickedTarget - represents the cell user has selected as target / destination
+ * @param - turn - color of piece whose  turn it iss
+ */
 void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrCell target1, PtrCell target2, int turn)
 {
-    //change prev cell data
+    //change previous cell data
                
     clickedCell->IsOccupied = FALSE;
 
@@ -67,6 +76,7 @@ void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrC
     clickedTarget->OccupiedBy = turn;
 
     clickedCell->Piece = NULL;
+    clickedCell->OccupiedBy = NONE;
 
     //re draw prev cell
 
@@ -77,7 +87,7 @@ void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrC
     if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
     if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
 
-    //draw piece on target cell
+    //draw piece on target /destination cell
 
     DrawPiece( board, clickedTarget, clickedTarget->Piece->Index, turn );
     
@@ -167,6 +177,10 @@ void PlayAITurn(PtrBoard board, int turn)
     MovePieceForAI(board, possibleMoves[moveIndex].CurrentCell,
                    possibleMoves[moveIndex].TargetCell, turn);
 }
+
+/*  @description - Used to draw the (sort of) score board, indicating how many pieces are 'OnBoard' of a particular type
+ *
+ */
 
 void DrawIndicator(PtrBoard board)
 {
