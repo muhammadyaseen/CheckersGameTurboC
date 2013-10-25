@@ -72,12 +72,6 @@ int main(void)
                    continue;
                }
                //now, targets have been identified and highlighted
-//                                             
-//               PrintRC(target1, 650, 360);
-//               PrintRC(target2, 650, 400);
-//               
-//               PrintRC(jumpedCell1, 650, 440);
-//               PrintRC(jumpedCell2, 650, 480);
                
                //we need to intercept clicks on target
                
