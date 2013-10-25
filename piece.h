@@ -3,7 +3,7 @@
 
 #include "datastructures.h"
 
-void DrawPiece(PtrBoard, PtrCell, int, int);
+//void DrawPiece(PtrBoard, PtrCell, int, int);
 
 /* 
  * @description : Used to draw the piece, This can be called anywhere you need to draw a piece.
@@ -15,7 +15,7 @@ void DrawPiece(PtrBoard, PtrCell, int, int);
  * 
  */
 
-void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
+void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing = FALSE)
 {    
     //store a reference to the cell in piece array
     board->Pieces[pieceNo].Cell = cell;
@@ -24,10 +24,10 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
     int type = color == RED ? RED : BLUE ;
 
     // configure the properties of associated cell
-    cell->IsOccupied = 1;  //this cell now has a piece belonging to it.
+    cell->IsOccupied = TRUE;  //this cell now has a piece belonging to it.
     cell->OccupiedBy = type;
 
-    board->Pieces[pieceNo].IsKing = 0;
+    board->Pieces[pieceNo].IsKing = isKing; //we also set this param in MovePiece function
     board->Pieces[pieceNo].State = OnBoard;
     board->Pieces[pieceNo].Type = type;
     
@@ -50,6 +50,19 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
 
     floodfill( circleX, circleY, color );
     
+    delay(150);
+    
+    //if the cell contains a kinged piece
+    
+    if (cell->Piece->IsKing)
+    {
+        //draws the circle for king indication        
+        setcolor(WHITE);
+        circle( circleX ,circleY, RADIUS / 4);
+        setfillstyle(SOLID_FILL, GREEN);
+        floodfill( circleX, circleY, WHITE );
+    }
+    
     // reset draw color to draw the next rectangle / cell
     setcolor(BORDER_COLOR);
 }
@@ -61,7 +74,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color)
  * @param - target1 - represents one of the possible target cells user might selection as destination of the move
  * @param - target2 - represents one of the possible target cells user might selection as destination of the move
  * @paraam - clickedTarget - represents the cell user has selected as target / destination
- * @param - turn - color of piece whose  turn it iss
+ * @param - turn - color of piece whose turn it is
  */
 void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrCell target1, PtrCell target2, int turn)
 {
@@ -86,10 +99,17 @@ void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrC
 
     if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
     if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
+    
+    int isKing = FALSE;
+    
+    //determine if the piece is kinged or not, piece is kinged if it reaches the opposite end of the board
+    
+    if ( turn == RED && clickedTarget->Row == 7 ) { clickedTarget->Piece->IsKing = TRUE; isKing = TRUE; }
+    if ( turn == BLUE && clickedTarget->Row == 0 ) { clickedTarget->Piece->IsKing = TRUE; isKing = TRUE; }
 
     //draw piece on target /destination cell
 
-    DrawPiece( board, clickedTarget, clickedTarget->Piece->Index, turn );
+    DrawPiece( board, clickedTarget, clickedTarget->Piece->Index, turn, isKing );
     
 }
 
