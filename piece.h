@@ -76,40 +76,47 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
  * @paraam - clickedTarget - represents the cell user has selected as target / destination
  * @param - turn - color of piece whose turn it is
  */
-void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrCell target1, PtrCell target2, int turn)
+void MovePiece(PtrMove move, int turn, PtrBoard board)
 {
     //change previous cell data
-               
-    clickedCell->IsOccupied = FALSE;
+    move->CurrentCell->IsOccupied = FALSE;
 
     //change target cell data
 
-    clickedTarget->Piece = clickedCell->Piece;
-    clickedTarget->IsOccupied = TRUE;
-    clickedTarget->OccupiedBy = turn;
+    move->TargetCell->Piece = move->CurrentCell->Piece;
+    move->TargetCell->IsOccupied = TRUE;
+    move->TargetCell->OccupiedBy = turn;
 
-    clickedCell->Piece = NULL;
-    clickedCell->OccupiedBy = NONE;
+    move->CurrentCell->Piece = NULL;
+    move->CurrentCell->OccupiedBy = NONE;
 
     //re draw prev cell
 
-    DrawCell( clickedCell, clickedCell->Row, clickedCell->Column );
+    DrawCell( move->CurrentCell, move->CurrentCell->Row, move->CurrentCell->Column );
 
     //redraw target cells in normal white color
 
-    if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
-    if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
+    if ( move->TargetCell != NULL) DrawCell( move->TargetCell, move->TargetCell->Row, move->TargetCell->Column );
+    if ( move->OtherTargetCell != NULL) DrawCell( move->OtherTargetCell, move->OtherTargetCell->Row, move->OtherTargetCell->Column );
     
     int isKing = FALSE;
     
     //determine if the piece is kinged or not, piece is kinged if it reaches the opposite end of the board
     
-    if ( turn == RED && clickedTarget->Row == 7 ) { clickedTarget->Piece->IsKing = TRUE; isKing = TRUE; }
-    if ( turn == BLUE && clickedTarget->Row == 0 ) { clickedTarget->Piece->IsKing = TRUE; isKing = TRUE; }
+    if ( turn == RED && move->TargetCell->Row == 7 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
+    if ( turn == BLUE && move->TargetCell->Row == 0 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
 
     //draw piece on target /destination cell
-
-    DrawPiece( board, clickedTarget, clickedTarget->Piece->Index, turn, isKing );
+    DrawPiece( board, move->TargetCell, move->TargetCell->Piece->Index, turn, isKing );
+    
+    if (move->isJump)
+    {
+       DrawCell(move->JumpedCell, move->JumpedCell->Row, move->JumpedCell->Column);
+       move->JumpedCell->Piece->State = Removed;
+       move->JumpedCell->Piece = NULL;
+       move->JumpedCell->IsOccupied = FALSE;
+       move->JumpedCell->OccupiedBy = 0;
+    }
     
 }
 
@@ -157,7 +164,7 @@ void PlayAITurn(PtrBoard board, int turn)
     
     } // End of RedPieces gathering for-loop
     
-    Moves possibleMoves[numberOfPieces * 2];
+    Move possibleMoves[numberOfPieces * 2];
     int numberOfMoves = 0;
     
     PtrCell target1, target2;

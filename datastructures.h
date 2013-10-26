@@ -26,12 +26,12 @@ typedef enum GameState GameState;
 typedef struct Board Board;
 typedef struct Cell Cell;
 typedef struct Piece Piece;
-typedef struct Moves Moves;
+typedef struct Move Move;
 
 typedef struct Board * PtrBoard;
 typedef struct Cell * PtrCell;
 typedef struct Piece * PtrPiece;
-
+typedef struct Move * PtrMove;
 
 struct Cell {
     int Index;
@@ -72,10 +72,13 @@ struct Board {
     
 };
 
-struct Moves {
+struct Move {
     PtrPiece Piece;      // Pointer to the piece that will make the move (subject of move)
     PtrCell TargetCell;  // Pointer to the cell the piece will be moved to
     PtrCell CurrentCell; // Pointer to the cell the piece is currently on
+    PtrCell OtherTargetCell; // For functions where the cell would need to be redrawn
+    int isJump;  // Whether the move is a jump or a normal  move
+    PtrCell JumpedCell;  // Pointer to the cell that will be jumped over
 };
 
 #endif

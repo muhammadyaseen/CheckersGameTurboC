@@ -80,6 +80,7 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
     {
         if ( board->Cells[i].Row == row && board->Cells[i].Column == col )
         {
+                     
             if (forJumpTarget) 
             {
                 //If cell is not occupied (i.e. empty white cell) 
@@ -142,108 +143,144 @@ int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *t
        //now, targets have been identified and highlighted
 }
 
-int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1, PtrCell * target2,PtrCell * jumpedCell1, PtrCell * jumpedCell2, PtrBoard board)
+int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCount, int turn, PtrBoard board)
 {
-       //identify targets : Piece can only move in diagonals ( in white cells )
+    PtrCell target1, target2; //Declaring temporary PtrCells to hold the targets
+        
+    *moveCount = 0;           // Re-initializing the moveCount so it overwrites 
+                              // the existing moveArray
+    
+    //identify targets : Piece can only move in diagonals ( in white cells )
+    //max 2 targets are possible for a move, minimum 0
 
-       //max 2 targets are possible for a move, minimum 0
+    int target1Row, target2Row, target1Col, target2Col;
 
-       int target1Row, target2Row, target1Col, target2Col;
+    if ( turn == RED )   //red piece go downwards
+    {
+        target1Row = clickedCell->Row + 1;
+        target2Row = clickedCell->Row + 1;
 
-       if ( turn == RED )   //red piece go downwards
-       {
-            target1Row = clickedCell->Row + 1;
-            target2Row = clickedCell->Row + 1;
+        target1Col = clickedCell->Column + 1;
+        target2Col = clickedCell->Column - 1;    
+    }
+    else //blue pieces go downwards
+    {
+        target1Row = clickedCell->Row - 1;
+        target2Row = clickedCell->Row - 1;
 
-            target1Col = clickedCell->Column + 1;
-            target2Col = clickedCell->Column - 1;    
-       }
-       else //blue pieces go downwards
-       {
-            target1Row = clickedCell->Row - 1;
-            target2Row = clickedCell->Row - 1;
+        target1Col = clickedCell->Column + 1;
+        target2Col = clickedCell->Column - 1; 
+    }
 
-            target1Col = clickedCell->Column + 1;
-            target2Col = clickedCell->Column - 1; 
-       }
+    target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE, turn);
 
-       *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE, turn);
+    target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
 
-       *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
+    setfillstyle(SOLID_FILL, YELLOW);
 
-       setfillstyle(SOLID_FILL, YELLOW);
+    //if both targets are null, user must again select the piece to complete the move
+    if ( (target1) == NULL && (target2) == NULL )
+       return FALSE;
 
-       //if both targets are null, user must again select the piece to complete the move
-       if ( (*target1) == NULL && (*target2) == NULL )
-           return FALSE;
+    //in case of empty white cells
+    if ( (target1) != NULL && (target1)->IsOccupied == 0 )
+    {
+        // Color the destination square
+        floodfill( (target1)->Left + 1, (target1)->Bottom - 1 , BORDER_COLOR );
+        
+        // Details of the move
+        moves[*moveCount].CurrentCell = clickedCell;
+        moves[*moveCount].TargetCell = target1;
+        moves[*moveCount].isJump = FALSE;
+        if (target2 != NULL)
+            moves[*moveCount].OtherTargetCell = target2;
+        (*moveCount) += 1;
+    }
+    
+    if ( (target2) != NULL && (target2)->IsOccupied == 0 )
+    {
+        // Color the destination square
+        floodfill( (target2)->Left + 1, (target2)->Bottom - 1 , BORDER_COLOR );
+        
+        // Details of the move
+        moves[*moveCount].CurrentCell = clickedCell;
+        moves[*moveCount].TargetCell = target2;
+        moves[*moveCount].isJump = FALSE;
+        if (target1 != NULL)
+            moves[*moveCount].OtherTargetCell = target1;
+        (*moveCount) += 1;
+    }
 
-       //in case of empty white cells
-       if ( (*target1) != NULL && (*target1)->IsOccupied == 0 )
-       {
-            floodfill( (*target1)->Left + 1, (*target1)->Bottom - 1 , BORDER_COLOR );
-       }
-       if ( (*target2) != NULL && (*target2)->IsOccupied == 0 )
-       {
-            floodfill( (*target2)->Left + 1, (*target2)->Bottom - 1 , BORDER_COLOR );
-       }
+    //in case when white cell is occupied by opponent piece
+    //we need to figure out whether this cell could be jumped over or not.
+
+    //In case of a jump, 'target1' and 'target2' represent the cell (or pieces) that will be jumped over,
+    //i.e. the final target or destination of the move is one diagonal ahead of  'target1' and 'target2'
+    //we must make sure that that "final target or destination" is available for the move to be considered
+    //valid and possible
+    //   T |  | T
+    //   ---------
+    //     | J|   
+    //   ---------
+    //   X |  | X
+    // depending on the position and color of X the destination 'T' for a piece 'X' that jumps over 'J' could be different 
+
+    //there are two "final destinations" because there could be two jumps possible
+    //for ex, both 'target1' and 'target2' have an opponent cell
+
+    PtrCell jumpDest1 = (PtrCell)NULL; //final target 1
+    
+    outtextxy(610, 250, "Iding dest 1 not null");
+
+    IdentifyAndHighlightJumpDestinations(&target1, &jumpDest1, clickedCell, turn, board );
+
+    if ( jumpDest1 != NULL )
+    {
+       outtextxy(610, 320, "Dest 1 not null");
        
-       //in case when white cell is occupied by opponent piece
-       //we need to figure out whether this cell could be jumped over or not.
+       //target is this destination
+       moves[*moveCount].CurrentCell = clickedCell;
+       moves[*moveCount].TargetCell = jumpDest1;
+       moves[*moveCount].isJump = TRUE;
+       moves[*moveCount].JumpedCell = target1;
        
-       //In case of a jump, 'target1' and 'target2' represent the cell (or pieces) that will be jumped over,
-       //i.e. the final target or destination of the move is one diagonal ahead of  'target1' and 'target2'
-       //we must make sure that that "final target or destination" is available for the move to be considered
-       //valid and possible
-       //   T |  | T
-       //   ---------
-       //     | J|   
-       //   ---------
-       //   X |  | X
-       // depending on the position and color of X the destination 'T' for a piece 'X' that jumps over 'J' could be different 
-         
-       //there are two 'final destinations' because there could be two jumps possible
-       //for ex, both 'target1' and 'target2' have an opponent cell
-       
-       PtrCell jumpDest1 = (PtrCell)NULL; //final target 1
-       
-       outtextxy(610, 250, "Iding dest 1 not null");
-       
-       IdentifyAndHighlightJumpDestinations(target1, &jumpDest1, clickedCell, turn, board );
-       
-       if ( jumpDest1 != NULL )
-       {
-           outtextxy(610, 320, "Dest 1 not null");
-           //target is this destination
-           
-           (*jumpedCell1) = (*target1);
-           (*target1) = jumpDest1;    
-       }
-       else
-       {
-           outtextxy(610, 320, "Dest 1 is null");
-           if ( (*target1) != NULL && (*target1)->IsOccupied ) (*target1) = NULL;
-       }
-       
-       PtrCell jumpDest2 = (PtrCell)NULL; //final target 2
+       // Problem will occur if both targets are jumps, resolve it later
+       if (target2 != NULL)
+           moves[*moveCount].OtherTargetCell = target2;
+       (*moveCount) += 1;
+    }
+    else
+    {
+       outtextxy(610, 320, "Dest 1 is null");
+       if ( target1 != NULL && target1->IsOccupied ) (target1) = NULL;
+    }
 
-       IdentifyAndHighlightJumpDestinations(target2, &jumpDest2, clickedCell, turn, board );
+    PtrCell jumpDest2 = (PtrCell)NULL; //final target 2
+
+    IdentifyAndHighlightJumpDestinations(&target2, &jumpDest2, clickedCell, turn, board );
+
+    if ( jumpDest2 != NULL )
+    {
+       outtextxy(620, 340, "Dest 2 not null");
+       //target is this destination
+
+       moves[*moveCount].CurrentCell = clickedCell;
+       moves[*moveCount].TargetCell = jumpDest2;
+       moves[*moveCount].isJump = TRUE;
+       moves[*moveCount].JumpedCell = target2;
        
-       if ( jumpDest2 != NULL )
-       {
-           outtextxy(620, 340, "Dest 2 not null");
-           //target is this destination
-           
-           (*jumpedCell2) = (*target2);
-           (*target2) = jumpDest2; 
-       }
-       else
-       {
-           outtextxy(620, 340, "Dest 2 is null");
-           if ( (*target2) != NULL && (*target2)->IsOccupied ) (*target2) = NULL;
-       }
-       
-       return TRUE;
-       //now, targets have been identified and highlighted
+       if (target1 != NULL)
+           moves[*moveCount].OtherTargetCell = target1;
+       (*moveCount) += 1;
+    }
+    else
+    {
+       outtextxy(620, 340, "Dest 2 is null");
+       if ( target2 != NULL && target2->IsOccupied ) (target2) = NULL;
+    }
+
+    return TRUE;
+    //now, targets have been identified and highlighted
 }
 
 int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell target2, int turn, PtrBoard board, int * targetX, int * targetY)
