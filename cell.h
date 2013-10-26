@@ -150,6 +150,10 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
     *moveCount = 0;           // Re-initializing the moveCount so it overwrites 
                               // the existing moveArray
     
+    int firstJump = FALSE;    // Used to keep track of the first jump's if block
+                              // Will be true if the jump is possible and needs 
+                              // to store the value of OtherTargetCell
+    
     //identify targets : Piece can only move in diagonals ( in white cells )
     //max 2 targets are possible for a move, minimum 0
 
@@ -175,13 +179,24 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
     target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE, turn);
 
     target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
-
+    
     setfillstyle(SOLID_FILL, YELLOW);
 
     //if both targets are null, user must again select the piece to complete the move
     if ( (target1) == NULL && (target2) == NULL )
        return FALSE;
-
+    
+    PtrCell jumpDest1 = (PtrCell) NULL; //final target 1
+    PtrCell jumpDest2 = (PtrCell) NULL; //final target 2
+    
+    outtextxy(610, 250, "Iding dest 1 not null");
+    
+    if ( target1 != NULL)
+        IdentifyAndHighlightJumpDestinations(&target1, &jumpDest1, clickedCell, turn, board );
+    
+    if ( target2 != NULL)
+        IdentifyAndHighlightJumpDestinations(&target2, &jumpDest2, clickedCell, turn, board );
+    
     //in case of empty white cells
     if ( (target1) != NULL && (target1)->IsOccupied == 0 )
     {
@@ -192,8 +207,10 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         moves[*moveCount].CurrentCell = clickedCell;
         moves[*moveCount].TargetCell = target1;
         moves[*moveCount].isJump = FALSE;
-        if (target2 != NULL)
-            moves[*moveCount].OtherTargetCell = target2;
+        
+        if (jumpDest2 != NULL) moves[*moveCount].OtherTargetCell = jumpDest2;
+        else if (target2 != NULL) moves[*moveCount].OtherTargetCell = target2;
+        
         (*moveCount) += 1;
     }
     
@@ -206,8 +223,9 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         moves[*moveCount].CurrentCell = clickedCell;
         moves[*moveCount].TargetCell = target2;
         moves[*moveCount].isJump = FALSE;
-        if (target1 != NULL)
-            moves[*moveCount].OtherTargetCell = target1;
+        if (jumpDest1 != NULL) moves[*moveCount].OtherTargetCell = jumpDest1;
+        else if (target1 != NULL) moves[*moveCount].OtherTargetCell = target1;
+        
         (*moveCount) += 1;
     }
 
@@ -228,12 +246,8 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
     //there are two "final destinations" because there could be two jumps possible
     //for ex, both 'target1' and 'target2' have an opponent cell
 
-    PtrCell jumpDest1 = (PtrCell)NULL; //final target 1
+  
     
-    outtextxy(610, 250, "Iding dest 1 not null");
-
-    IdentifyAndHighlightJumpDestinations(&target1, &jumpDest1, clickedCell, turn, board );
-
     if ( jumpDest1 != NULL )
     {
        outtextxy(610, 320, "Dest 1 not null");
@@ -245,8 +259,9 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
        moves[*moveCount].JumpedCell = target1;
        
        // Problem will occur if both targets are jumps, resolve it later
-       if (target2 != NULL)
-           moves[*moveCount].OtherTargetCell = target2;
+       if (jumpDest2 != NULL) moves[*moveCount].OtherTargetCell = jumpDest2;
+       else moves[*moveCount].OtherTargetCell = target2;
+       
        (*moveCount) += 1;
     }
     else
@@ -254,10 +269,6 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
        outtextxy(610, 320, "Dest 1 is null");
        if ( target1 != NULL && target1->IsOccupied ) (target1) = NULL;
     }
-
-    PtrCell jumpDest2 = (PtrCell)NULL; //final target 2
-
-    IdentifyAndHighlightJumpDestinations(&target2, &jumpDest2, clickedCell, turn, board );
 
     if ( jumpDest2 != NULL )
     {
@@ -269,8 +280,9 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
        moves[*moveCount].isJump = TRUE;
        moves[*moveCount].JumpedCell = target2;
        
-       if (target1 != NULL)
-           moves[*moveCount].OtherTargetCell = target1;
+       if (jumpDest1 != NULL) moves[*moveCount].OtherTargetCell = jumpDest1;
+       else moves[*moveCount].OtherTargetCell = target1;
+       
        (*moveCount) += 1;
     }
     else
@@ -278,7 +290,11 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
        outtextxy(620, 340, "Dest 2 is null");
        if ( target2 != NULL && target2->IsOccupied ) (target2) = NULL;
     }
-
+    
+    // Assigning the value here resolves the issue of there being a bug when
+    // both possible moves are jumps
+    //if (firstJump) m;
+    
     return TRUE;
     //now, targets have been identified and highlighted
 }
