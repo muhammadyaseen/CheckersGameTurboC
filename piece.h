@@ -110,6 +110,7 @@ void MovePiece(PtrMove move, int turn, PtrBoard board)
     //draw piece on target /destination cell
     DrawPiece( board, move->TargetCell, move->TargetCell->Piece->Index, turn, isKing );
     
+    // If the move is a jump, then the JumpedCell needs to be updated as well
     if (move->isJump)
     {
        DrawCell(move->JumpedCell, move->JumpedCell->Row, move->JumpedCell->Column);
@@ -134,11 +135,6 @@ void MovePieceForAI(PtrBoard board, PtrCell selectedCell , PtrCell target, int t
 
     //re draw previous cell
     DrawCell( selectedCell, selectedCell->Row, selectedCell->Column );
-
-    //redraw target cells in normal white color
-
-//    if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
-//    if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
 
     //draw piece on target cell
     DrawPiece( board, target, target->Piece->Index, turn );
