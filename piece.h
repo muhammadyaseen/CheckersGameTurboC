@@ -97,7 +97,8 @@ void MovePiece(PtrMove move, int turn, PtrBoard board)
     //redraw target cells in normal white color
 
     if ( move->TargetCell != NULL) DrawCell( move->TargetCell, move->TargetCell->Row, move->TargetCell->Column );
-    if ( move->OtherTargetCell != NULL) DrawCell( move->OtherTargetCell, move->OtherTargetCell->Row, move->OtherTargetCell->Column );
+    if ( move->OtherTargetCell != NULL && move->OtherTargetCell->IsOccupied == FALSE) 
+        DrawCell( move->OtherTargetCell, move->OtherTargetCell->Row, move->OtherTargetCell->Column );
     
     int isKing = FALSE;
     
