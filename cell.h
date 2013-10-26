@@ -5,7 +5,7 @@
 
 
 void DrawCell(PtrCell, int, int);
-void IdentifyAndHighlightJumpDestinations(PtrCell *, PtrCell *, PtrCell, int, PtrBoard);
+void IdentifyJumpDestinationsForAI(PtrCell *, PtrCell *, PtrCell, int, PtrBoard);
 
 
 /* @description : Used to draw the rectangular ceell on board.
@@ -105,43 +105,6 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
     return NULL;
 }
 
-int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
-{
-       //identify targets : Piece can only move in diagonals ( in white cells )
-
-       //max 2 targets are possible for a move, minimum 0
-
-       int target1Row, target2Row, target1Col, target2Col;
-
-       if ( turn == RED )   //red piece go downwards
-       {
-            target1Row = selectedCell->Row + 1;
-            target2Row = selectedCell->Row + 1;
-
-            target1Col = selectedCell->Column + 1;
-            target2Col = selectedCell->Column - 1;    
-       }
-       else //blue pieces go downwards
-       {
-            target1Row = selectedCell->Row - 1;
-            target2Row = selectedCell->Row - 1;
-
-            target1Col = selectedCell->Column + 1;
-            target2Col = selectedCell->Column - 1; 
-       }
-
-       *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE);
-
-       *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE);
-
-       // If both targets are null, user must again select the piece to complete the move
-       if ( (*target1) == NULL && (*target2) == NULL )
-           return FALSE;
-       
-       return TRUE;
-       //now, targets have been identified and highlighted
-}
-
 int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1, PtrCell * target2,PtrCell * jumpedCell1, PtrCell * jumpedCell2, PtrBoard board)
 {
        //identify targets : Piece can only move in diagonals ( in white cells )
@@ -208,7 +171,7 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1
        
        outtextxy(610, 250, "Iding dest 1 not null");
        
-       IdentifyAndHighlightJumpDestinations(target1, &jumpDest1, clickedCell, turn, board );
+       IdentifyJumpDestinationsForAI(target1, &jumpDest1, clickedCell, turn, board );
        
        if ( jumpDest1 != NULL )
        {
@@ -226,7 +189,7 @@ int IdentifyAndHighlightTargets(int turn, PtrCell clickedCell, PtrCell * target1
        
        PtrCell jumpDest2 = (PtrCell)NULL; //final target 2
 
-       IdentifyAndHighlightJumpDestinations(target2, &jumpDest2, clickedCell, turn, board );
+       IdentifyJumpDestinationsForAI(target2, &jumpDest2, clickedCell, turn, board );
        
        if ( jumpDest2 != NULL )
        {
@@ -313,7 +276,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell targ
  * @param - jumpedOverCell - This is the cell that 'would be' jumped over if the conditions are true i.e. it is not yet confirmed that
  *                           this cells is appropriate for jump
  */
-void IdentifyAndHighlightJumpDestinations(PtrCell * jumpedOverCell, PtrCell * finalDestination, PtrCell clickedCell, int turn, PtrBoard board)
+void IdentifyJumpDestinations(PtrCell * jumpedOverCell, PtrCell * finalDestination, PtrCell clickedCell, int turn, PtrBoard board)
 {
     if ( (*jumpedOverCell) != NULL && (*jumpedOverCell)->IsOccupied && (*jumpedOverCell)->OccupiedBy != turn )
     {   
@@ -411,5 +374,120 @@ void PrintRC(PtrCell cell, int x, int y)
     }
 }
 
-#endif	/* CELL_H */
+int IdentifyTargetsForAI(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
+{
+       //identify targets : Piece can only move in diagonals ( in white cells )
 
+       //max 2 targets are possible for a move, minimum 0
+
+       int target1Row, target2Row, target1Col, target2Col;
+
+       if ( turn == RED )   //red piece go downwards
+       {
+            target1Row = selectedCell->Row + 1;
+            target2Row = selectedCell->Row + 1;
+
+            target1Col = selectedCell->Column + 1;
+            target2Col = selectedCell->Column - 1;    
+       }
+       else //blue pieces go downwards
+       {
+            target1Row = selectedCell->Row - 1;
+            target2Row = selectedCell->Row - 1;
+
+            target1Col = selectedCell->Column + 1;
+            target2Col = selectedCell->Column - 1; 
+       }
+
+       *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE);
+
+       *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE);
+
+       // If both targets are null, user must again select the piece to complete the move
+       if ( (*target1) == NULL && (*target2) == NULL )
+           return FALSE;
+       
+       return TRUE;
+       //now, targets have been identified and highlighted
+}
+
+void IdentifyJumpDestinationsForAI(PtrCell * jumpedOverCell, PtrCell * finalDestination, PtrCell clickedCell, int turn, PtrBoard board)
+{
+    if ( (*jumpedOverCell) != NULL && (*jumpedOverCell)->IsOccupied && (*jumpedOverCell)->OccupiedBy != turn )
+    {   
+           //calculate the co-ords of final destination for the jump
+           
+           if ( turn == BLUE ) //blue pieces go up
+           {
+               if ( clickedCell->Column < (*jumpedOverCell)->Column )
+               {
+                   //target is two rows forward and two columns right
+                   
+                   (*finalDestination) = GetCellByRowColumn( clickedCell->Row - 2, clickedCell->Column + 2, board, FALSE, turn, TRUE );
+                   
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+               
+               if ( clickedCell->Column > (*jumpedOverCell)->Column )
+               {
+                   //target is two rows forward and two columns left
+                   
+                    (*finalDestination) = GetCellByRowColumn( clickedCell->Row - 2, clickedCell->Column - 2, board, FALSE, turn, TRUE );
+                                     
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+           }
+           
+           if ( turn == RED ) //red pieces go down
+           {
+               if ( clickedCell->Column < (*jumpedOverCell)->Column )
+               {
+                   //target is two rows below and two columns right
+                   
+                   (*finalDestination) = GetCellByRowColumn( clickedCell->Row + 2, clickedCell->Column + 2, board, FALSE, turn, TRUE );
+                   
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+               
+               if ( clickedCell->Column > (*jumpedOverCell)->Column )
+               {
+                   //target is two rows below and two columns right
+                   
+                    (*finalDestination) = GetCellByRowColumn( clickedCell->Row + 2, clickedCell->Column - 2, board, FALSE, turn, TRUE );
+                                     
+                   //if this isnt null, highlight this cell
+                   //make this cell the destination cell for MovePiece
+                   
+                   if ( (*finalDestination) != NULL )
+                   {
+                       setfillstyle(SOLID_FILL, YELLOW);
+                       floodfill( (*finalDestination)->Left + 1, (*finalDestination)->Bottom - 1 , BORDER_COLOR );
+                   }
+               }
+           }
+       }
+}
+
+
+#endif	/* CELL_H */

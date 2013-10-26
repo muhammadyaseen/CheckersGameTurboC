@@ -129,6 +129,10 @@ int main(void)
                    
                    selectionChanged = FALSE;
                    
+                   PlayAITurn(&CheckersBoard, turn);
+                   
+                   turn = turn == BLUE ? RED : BLUE; 
+                   strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;                   
                }
                else
                {

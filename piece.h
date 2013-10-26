@@ -135,7 +135,7 @@ void PlayAITurn(PtrBoard board, int turn)
     for (int i = 0; i < numberOfPieces; i++)
     {
         // Enters when the function does return targets
-        if (IdentifyTargets(turn, redPieceCells[i].Cell, &target1, &target2, board))
+        if (IdentifyTargetsForAI(turn, redPieceCells[i].Cell, &target1, &target2, board))
         {
             // If a target exists, it stores all the data in the PossibleMoves 
             // array
