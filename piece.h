@@ -160,6 +160,26 @@ void PlayAITurn(PtrBoard board, int turn)
         
     } // End of PossibleMoves calculating for-loop
     
+    Moves goodMoves[numberOfMoves];
+    int numberOfGoodMoves = 0;
+    
+    for (int i = 0; i < numberOfMoves; i++)
+    {
+        // If a piece will move towards the right or left edge of the board, the
+        // AI will prefer to move it for a strategical advantage, as the edge
+        // pieces cannot be jumped over
+        if (possibleMoves[i].TargetCell->Column == 0 ||
+            possibleMoves[i].TargetCell->Column == 7)
+        {
+            goodMoves[numberOfGoodMoves].Piece = possibleMoves[i].Piece;
+            goodMoves[numberOfGoodMoves].CurrentCell = possibleMoves[i].CurrentCell;
+            goodMoves[numberOfGoodMoves].TargetCell = possibleMoves[i].TargetCell;
+            
+            numberOfGoodMoves++;
+        }
+        
+    } // End of GoodMoves calculating for-loop
+    
     // Randomly select a move
     int moveIndex = rand() % numberOfMoves;
     
