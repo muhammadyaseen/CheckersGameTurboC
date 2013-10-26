@@ -182,7 +182,6 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
     if ( (target1) == NULL && (target2) == NULL )
        return FALSE;
     
-    
     PtrCell jumpDest1 = (PtrCell) NULL; //final target 1
     PtrCell jumpDest2 = (PtrCell) NULL; //final target 2
     
@@ -223,7 +222,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         moves[*moveCount].CurrentCell = clickedCell;
         moves[*moveCount].TargetCell = target2;
         moves[*moveCount].isJump = FALSE;
-        
+
         // If the other move was a jump, then assign the appropriate cell, else if
         // the other move was a normal move, then do the same.
         if (jumpDest1 != NULL) moves[*moveCount].OtherTargetCell = jumpDest1;
@@ -278,7 +277,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
        outtextxy(620, 340, "Dest 2 not null");
        
        // jumpDest is this destination and JumpedCell was the target
-       // Details of the jump are being loaded into the move struct
+       // Details of the jump are being loaded into the move structure
        moves[*moveCount].CurrentCell = clickedCell;
        moves[*moveCount].TargetCell = jumpDest2;
        moves[*moveCount].isJump = TRUE;
@@ -296,7 +295,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
        outtextxy(620, 340, "Dest 2 is null");
        if ( target2 != NULL && target2->IsOccupied ) (target2) = NULL;
     }
-    
+
     return TRUE;
     //now, targets have been identified and highlighted
 }
