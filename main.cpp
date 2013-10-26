@@ -29,33 +29,36 @@ int main(void)
    
    strcpy(turnColor, "RED");
    
-   PtrMove testMoves = (PtrMove) malloc(sizeof(Move)*2);
+   PtrMove moves = (PtrMove) malloc(sizeof(Move) * 4);
    int moveCount = 0;
-   PtrCell testPiece;
    
-   testMoves[0].CurrentCell = GetCellByRowColumn(2, 3, &CheckersBoard, FALSE, turn, FALSE);
-   testMoves[0].TargetCell = GetCellByRowColumn(3, 4, &CheckersBoard, FALSE, turn, FALSE);
-   testMoves[0].OtherTargetCell = (PtrCell) NULL;
-   testMoves[0].isJump = FALSE;
-   
-   MovePiece(&testMoves[0], turn, &CheckersBoard);
-   
-   delay(500);
-   
-   testMoves[1].CurrentCell = GetCellByRowColumn(5, 6, &CheckersBoard, FALSE, turn = BLUE, FALSE);
-   testMoves[1].TargetCell = GetCellByRowColumn(4, 5, &CheckersBoard, FALSE, turn, FALSE);
-   testMoves[1].OtherTargetCell = (PtrCell) NULL;
-   testMoves[1].isJump = FALSE;
-   
-   MovePiece(&testMoves[1], turn, &CheckersBoard);
-   
-   delay(500);
-   
-   testPiece = GetCellByRowColumn(4, 5, &CheckersBoard, FALSE, turn, FALSE);
-   
-   IdentifyAndHighlightTargets(testPiece, testMoves, &moveCount, turn, &CheckersBoard);
-   delay(1000);
-   MovePiece(&testMoves[1], turn, &CheckersBoard);
+   //==============TEST FOR JUMP======================//
+//   PtrCell testPiece;
+//   
+//   testMoves[0].CurrentCell = GetCellByRowColumn(2, 3, &CheckersBoard, FALSE, turn, FALSE);
+//   testMoves[0].TargetCell = GetCellByRowColumn(3, 4, &CheckersBoard, FALSE, turn, FALSE);
+//   testMoves[0].OtherTargetCell = (PtrCell) NULL;
+//   testMoves[0].isJump = FALSE;
+//   
+//   MovePiece(&testMoves[0], turn, &CheckersBoard);
+//   
+//   delay(500);
+//   
+//   testMoves[1].CurrentCell = GetCellByRowColumn(5, 6, &CheckersBoard, FALSE, turn = BLUE, FALSE);
+//   testMoves[1].TargetCell = GetCellByRowColumn(4, 5, &CheckersBoard, FALSE, turn, FALSE);
+//   testMoves[1].OtherTargetCell = (PtrCell) NULL;
+//   testMoves[1].isJump = FALSE;
+//   
+//   MovePiece(&testMoves[1], turn, &CheckersBoard);
+//   
+//   delay(500);
+//   
+//   testPiece = GetCellByRowColumn(4, 5, &CheckersBoard, FALSE, turn, FALSE);
+//   
+//   IdentifyAndHighlightTargets(testPiece, testMoves, &moveCount, turn, &CheckersBoard);
+//   delay(1000);
+//   MovePiece(&testMoves[1], turn, &CheckersBoard);
+   //=====================================================//
    
    //==============TEST FOR IDTargets======================//
 //   delay(1000);
@@ -89,7 +92,7 @@ int main(void)
 //   
    //=====================================================//
    
-   delay(2000);
+//   delay(2000);
    
    //==============TEST FOR MovePiece======================//
 //   testMoves[0].CurrentCell = GetCellByRowColumn(2, 1, &CheckersBoard, FALSE, turn, FALSE);
@@ -109,74 +112,74 @@ int main(void)
 //   MovePiece(&testMoves[2], turn, &CheckersBoard);
    //=====================================================//
    
-//   while(true)
-//   {
-//       DrawIndicator(&CheckersBoard);
-//       
-//       //turn indicator
-//       strcmp(turnColor, "BLUE") ? outtextxy(600, 110, "RED's turn") : outtextxy(600, 110,"BLUE's turn");
-//       
-//       //check if correct piece is selected
-//       if ( !selectionChanged )
-//       {
-//           //selectionChanged = FALSE;
-//           getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
-//       }
-//       // if the button was clicked, then we check if the correct piece was selected
-//       if ( !( mouseX == -1 && mouseY == -1 ) )
-//       {
-//           //for ex, it this is blue's turn but user clicks on a red piece
-//           //this check tests that scenario
-//           if ( getpixel(mouseX, mouseY) != turn )
-//           {
-//               outtextxy(600, 90,"Select correct piece");
+   while(true)
+   {
+       DrawIndicator(&CheckersBoard);
+       
+       //turn indicator
+       strcmp(turnColor, "BLUE") ? outtextxy(600, 110, "RED's turn") : outtextxy(600, 110,"BLUE's turn");
+       
+       //check if correct piece is selected
+       if ( !selectionChanged )
+       {
+           //selectionChanged = FALSE;
+           getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
+       }
+       // if the button was clicked, then we check if the correct piece was selected
+       if ( !( mouseX == -1 && mouseY == -1 ) )
+       {
+           //for ex, it this is blue's turn but user clicks on a red piece
+           //this check tests that scenario
+           if ( getpixel(mouseX, mouseY) != turn )
+           {
+               outtextxy(600, 90,"Select correct piece");
+               
+               if ( turn == RED )
+                   outtextxy(600, 110,"Select RED colored piece");
+               else 
+                   outtextxy(600, 110,"Select BLUE colored piece");    
+           }
+           else
+           {              
+               //user has selected the correct piece, now we have to identify the possible targets for the move
+               PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
+               
+               PtrCell target1 = NULL, target2 = NULL; //represent cells with jumped over pieces in case of a jump, empty highlighted cells otherwise
+               PtrCell jumpedCell1 = NULL, jumpedCell2 = NULL; // represent targets in case of jump, NULL otherwise
+               
+               //jumpedCell1 = jumpedCell2 = GetCellByRowColumn(0,0, &CheckersBoard, FALSE, turn, FALSE);
+               
+               if ( !IdentifyAndHighlightTargets(clickedCell, moves, &moveCount, turn, &CheckersBoard ) )
+               {
+                   selectionChanged = FALSE;
+                   continue;
+               }
+               //now, targets have been identified and highlighted
+//                                             
+//               PrintRC(target1, 650, 360);
+//               PrintRC(target2, 650, 400);
 //               
-//               if ( turn == RED )
-//                   outtextxy(600, 110,"Select RED colored piece");
-//               else 
-//                   outtextxy(600, 110,"Select BLUE colored piece");    
-//           }
-//           else
-//           {              
-//               //user has selected the correct piece, now we have to identify the possible targets for the move
-//               PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
-//               
-//               PtrCell target1 = NULL, target2 = NULL; //represent cells with jumped over pieces in case of a jump, empty highlighted cells otherwise
-//               PtrCell jumpedCell1 = NULL, jumpedCell2 = NULL; // represent targets in case of jump, NULL otherwise
-//               
-//               //jumpedCell1 = jumpedCell2 = GetCellByRowColumn(0,0, &CheckersBoard, FALSE, turn, FALSE);
-//               
-//               if ( !IdentifyAndHighlightTargets(turn, clickedCell, &target1, &target2, &jumpedCell1 , &jumpedCell2, &CheckersBoard ) )
-//               {
-//                   selectionChanged = FALSE;
-//                   continue;
-//               }
-//               //now, targets have been identified and highlighted
-////                                             
-////               PrintRC(target1, 650, 360);
-////               PrintRC(target2, 650, 400);
-////               
-////               PrintRC(jumpedCell1, 650, 440);
-////               PrintRC(jumpedCell2, 650, 480);
-//               
-//               //we need to intercept clicks on target
-//               
-//               //IDenftify which target was selected
-//               PtrCell clickedTarget = NULL;
-//               
-//               //this forces the user to select a valid target
-//               //until the the mouse is clicked, this loop will keep on polling the device
-//               int targetSelected = 0;
-//               
-//               while( ! ( targetSelected = InterceptTargetClicks(&clickedTarget, target1, target2, turn, &CheckersBoard, &mouseX, &mouseY) ) )
-//               {
-//                  //well, we can wait till the user selects a target
-//               } //end while for target selection
-//               
-//               //When we exit the above loop, clickedTarget contains the address of a valid target 
-//                
-//               //in case of jump move, we need to update the 'jumped over' cell data as well;
-//               
+//               PrintRC(jumpedCell1, 650, 440);
+//               PrintRC(jumpedCell2, 650, 480);
+               
+               //we need to intercept clicks on target
+               
+               //IDenftify which target was selected
+               PtrCell clickedTarget = NULL;
+               
+               //this forces the user to select a valid target
+               //until the the mouse is clicked, this loop will keep on polling the device
+               int moveSelected = 0;
+               
+               while( ! ( moveSelected = InterceptTargetClicks(&clickedTarget, moves, &moveCount, &mouseX, &mouseY, turn, &CheckersBoard) ) )
+               {
+                  //well, we can wait till the user selects a target
+               } //end while for target selection
+               
+               //When we exit the above loop, clickedTarget contains the address of a valid target 
+                
+               //in case of jump move, we need to update the 'jumped over' cell data as well;
+               
 //               if ( jumpedCell1 != NULL && targetSelected == TARGET_CLICK_1)
 //               {
 //                   DrawCell(jumpedCell1, jumpedCell1->Row, jumpedCell1->Column);
@@ -194,30 +197,30 @@ int main(void)
 //                   jumpedCell2->IsOccupied = FALSE;
 //                   jumpedCell2->OccupiedBy = 0;
 //               }
-//               
-//               //end jump specific code
-//               
-//               //now we have to move the piece to clicked cell
-//               
-//               if ( targetSelected != CHANGE_PIECE )
-//               {
-//                   MovePiece(&CheckersBoard, clickedCell, clickedTarget, target1, target2, turn );
-//
-//                   //set values for next turn
-//                   turn = turn == BLUE ? RED : BLUE; 
-//                   strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
-//                   
-//                   selectionChanged = FALSE;
-//                   
-//               }
-//               else
-//               {
-//                   selectionChanged = TRUE;
-//               }
-//
-//           }
-//       }
-//   }
+               
+               //end jump specific code
+               
+               //now we have to move the piece to clicked cell
+               
+               if ( moveSelected != CHANGE_PIECE )
+               {
+                   MovePiece(&moves[moveSelected - 1], turn, &CheckersBoard);
+
+                   //set values for next turn
+                   turn = turn == BLUE ? RED : BLUE; 
+                   strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
+                   
+                   selectionChanged = FALSE;
+                   
+               }
+               else
+               {
+                   selectionChanged = TRUE;
+               }
+
+           }
+       }
+   }
 
    closegraph();
       

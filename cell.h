@@ -283,7 +283,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
     //now, targets have been identified and highlighted
 }
 
-int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell target2, int turn, PtrBoard board, int * targetX, int * targetY)
+int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves, int *moveCount, int * targetX, int * targetY, int turn, PtrBoard board)
 {   
     getmouseclick(WM_LBUTTONDOWN, *targetX, *targetY);
 
@@ -297,24 +297,16 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell targ
        {
            //now we can check whether the clicked cell was one of the target cells
            //one of the two target cells could be null
+           for (int i = 0; i < *moveCount; i++)
+               if( moves[i].TargetCell != NULL && ( (*clickedTarget)->Row == moves[i].TargetCell->Row && (*clickedTarget)->Column == moves[i].TargetCell->Column ) )
+               {
+                   //target one was selected as destination
+                   outtextxy(550, 60, "target 1");
+                   //return TRUE;
+                   return (i+1); // +1 to break out of the while loop
+               } 
            
-           if( target1 != NULL && ( (*clickedTarget)->Row == target1->Row && (*clickedTarget)->Column == target1->Column ) )
-           {
-               //target one was selected as destination
-               outtextxy(550, 60, "target 1");
-               //return TRUE;
-               return TARGET_CLICK_1;
-
-           } 
-           else if (  target2 != NULL && ( (*clickedTarget)->Row == target2->Row && (*clickedTarget)->Column == target2->Column ) )
-           {
-               //target two was selected as destination
-               outtextxy(550, 70, "target 2");
-               //return TRUE;
-               return TARGET_CLICK_2;
-           }
-           else
-           {
+           
                //user clicked on a non-target / non-highlighted cell
                
                //1. User clicked on an other piece (To select a different piece for move)
@@ -331,15 +323,19 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrCell target1, PtrCell targ
                    outtextxy(550, 80, "change subject");
                    
                        //redraw target cells in normal white color
-
-                   if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
-                   if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
-
+                   for (int i = 0; i < *moveCount; i++)
+                   {
+                       if ( moves[i].TargetCell != NULL) 
+                           DrawCell( moves[i].TargetCell, moves[i].TargetCell->Row, 
+                                     moves[i].TargetCell->Column );
+                   }
+                   
                    return CHANGE_PIECE;
                }
+           
                outtextxy(550, 80, "non target");
                return FALSE;
-           }
+           
        }
     }
     

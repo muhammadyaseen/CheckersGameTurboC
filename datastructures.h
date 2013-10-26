@@ -11,8 +11,8 @@
 #define DRAW_START_DOWN 4  // draw piece in last two rows
 #define BORDER_COLOR CYAN
 #define CHANGE_PIECE 100  //if user has changed selection of piece during a turn
-#define TARGET_CLICK_1 10 //return 10 if 1st target was clicked
-#define TARGET_CLICK_2 20 //return 20 if 2nd target was clicked
+#define TARGET_CLICK_1 1  //return 1 if 1st target was clicked
+#define TARGET_CLICK_2 2  //return 2 if 2nd target was clicked
 #define NONE -404         //when a cell is not occupied by RED or BLUE
 
 enum PieceType { Red, Blue };
