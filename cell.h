@@ -17,19 +17,22 @@ void IdentifyAndHighlightJumpDestinations(PtrCell *, PtrCell *, PtrCell, int, Pt
 
 void DrawCell(PtrCell cellToDraw, int row, int col)
 {
-    rectangle( cellToDraw->Left, cellToDraw->Top, cellToDraw->Right, cellToDraw->Bottom );
-    
-    //determines whether the drawn cell is white or black
-    //Condition is true in case of white cells only
-    
-    if ( (col + row )  % 2 != 0)
+    if(cellToDraw != NULL)
     {
-        int seedX = cellToDraw->Right - 1;
-        int seedY =  cellToDraw->Bottom - 1;
-                
-        setfillstyle(SOLID_FILL, WHITE);
-        
-        floodfill( seedX, seedY, BORDER_COLOR );       
+        rectangle( cellToDraw->Left, cellToDraw->Top, cellToDraw->Right, cellToDraw->Bottom );
+
+        //determines whether the drawn cell is white or black
+        //Condition is true in case of white cells only
+
+        if ( (col + row )  % 2 != 0)
+        {
+            int seedX = cellToDraw->Right - 1;
+            int seedY =  cellToDraw->Bottom - 1;
+
+            setfillstyle(SOLID_FILL, WHITE);
+
+            floodfill( seedX, seedY, BORDER_COLOR );       
+        }
     }
 }
 
@@ -212,7 +215,8 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         //Note: If both jumpDest2 and target2 are NULL, OtherTargetCell will have a garbage value
         if (jumpDest2 != NULL) 
             moves[*moveCount].OtherTargetCell = jumpDest2;
-        else if (target2 != NULL)
+        //else if (target2 != NULL)
+        else
             moves[*moveCount].OtherTargetCell = target2;
         
         (*moveCount) += 1;
@@ -231,7 +235,9 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         // If the other move was a jump, then assign the appropriate cell, else if
         // the other move was a normal move, then do the same.
         if (jumpDest1 != NULL) moves[*moveCount].OtherTargetCell = jumpDest1;
-        else if (target1 != NULL) moves[*moveCount].OtherTargetCell = target1;
+        //else if (target1 != NULL)
+        else
+            moves[*moveCount].OtherTargetCell = target1;
         
         (*moveCount) += 1;
     }
