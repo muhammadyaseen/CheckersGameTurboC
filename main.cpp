@@ -30,89 +30,10 @@ int main(void)
    strcpy(turnColor, "RED");
    
    PtrMove moves = (PtrMove) malloc(sizeof(Move) * 4);
+   
    int moveCount = 0;
    
-   //==============TEST FOR JUMP======================//
-//   PtrCell testPiece;
-//   
-//   testMoves[0].CurrentCell = GetCellByRowColumn(2, 3, &CheckersBoard, FALSE, turn, FALSE);
-//   testMoves[0].TargetCell = GetCellByRowColumn(3, 4, &CheckersBoard, FALSE, turn, FALSE);
-//   testMoves[0].OtherTargetCell = (PtrCell) NULL;
-//   testMoves[0].isJump = FALSE;
-//   
-//   MovePiece(&testMoves[0], turn, &CheckersBoard);
-//   
-//   delay(500);
-//   
-//   testMoves[1].CurrentCell = GetCellByRowColumn(5, 6, &CheckersBoard, FALSE, turn = BLUE, FALSE);
-//   testMoves[1].TargetCell = GetCellByRowColumn(4, 5, &CheckersBoard, FALSE, turn, FALSE);
-//   testMoves[1].OtherTargetCell = (PtrCell) NULL;
-//   testMoves[1].isJump = FALSE;
-//   
-//   MovePiece(&testMoves[1], turn, &CheckersBoard);
-//   
-//   delay(500);
-//   
-//   testPiece = GetCellByRowColumn(4, 5, &CheckersBoard, FALSE, turn, FALSE);
-//   
-//   IdentifyAndHighlightTargets(testPiece, testMoves, &moveCount, turn, &CheckersBoard);
-//   delay(1000);
-//   MovePiece(&testMoves[1], turn, &CheckersBoard);
-   //=====================================================//
-   
-   //==============TEST FOR IDTargets======================//
-//   delay(1000);
-//   
-//   testPiece = GetCellByRowColumn(2, 1, &CheckersBoard, FALSE, turn, FALSE);
-//   IdentifyAndHighlightTargets(testPiece, testMoves, &moveCount, &CheckersBoard, turn);
-//   
-//   delay(1000);
-//   
-//   MovePiece(&testMoves[1], turn, &CheckersBoard);
-//   
-//   delay(1000);
-//   
-//   testPiece = GetCellByRowColumn(2, 3, &CheckersBoard, FALSE, turn, FALSE);
-//   IdentifyAndHighlightTargets(testPiece, testMoves, &moveCount, &CheckersBoard, turn);
-//   
-//   delay(1000);
-//   
-//   MovePiece(&testMoves[1], turn, &CheckersBoard);
-//   
-//   delay(1000);
-//   
-//   turn = BLUE;
-//   
-//   testPiece = GetCellByRowColumn(5, 2, &CheckersBoard, FALSE, turn, FALSE);
-//   IdentifyAndHighlightTargets(testPiece, testMoves, &moveCount, &CheckersBoard, turn);
-//   
-//   delay(1000);
-//   
-//   MovePiece(&testMoves[1], turn, &CheckersBoard);
-//   
-   //=====================================================//
-   
-//   delay(2000);
-   
-   //==============TEST FOR MovePiece======================//
-//   testMoves[0].CurrentCell = GetCellByRowColumn(2, 1, &CheckersBoard, FALSE, turn, FALSE);
-//   testMoves[0].TargetCell = GetCellByRowColumn(3, 2, &CheckersBoard, FALSE, turn, FALSE);
-//   
-//   testMoves[1].CurrentCell = GetCellByRowColumn(2, 3, &CheckersBoard, FALSE, turn, FALSE);
-//   testMoves[1].TargetCell = GetCellByRowColumn(3, 4, &CheckersBoard, FALSE, turn, FALSE);
-//   
-//   testMoves[2].CurrentCell = GetCellByRowColumn(2, 5, &CheckersBoard, FALSE, turn, FALSE);
-//   testMoves[2].TargetCell = GetCellByRowColumn(3, 6, &CheckersBoard, FALSE, turn, FALSE);
-//   
-//   delay(1000);   
-//   MovePiece(&testMoves[0], turn, &CheckersBoard);   
-//   delay(1000);   
-//   MovePiece(&testMoves[1], turn, &CheckersBoard);
-//   delay(1000);   
-//   MovePiece(&testMoves[2], turn, &CheckersBoard);
-   //=====================================================//
-   
-   while(true)
+   while(TRUE)
    {
        DrawIndicator(&CheckersBoard);
        
@@ -155,12 +76,6 @@ int main(void)
                    continue;
                }
                //now, targets have been identified and highlighted
-//                                             
-//               PrintRC(target1, 650, 360);
-//               PrintRC(target2, 650, 400);
-//               
-//               PrintRC(jumpedCell1, 650, 440);
-//               PrintRC(jumpedCell2, 650, 480);
                
                //we need to intercept clicks on target
                
@@ -177,29 +92,7 @@ int main(void)
                } //end while for target selection
                
                //When we exit the above loop, clickedTarget contains the address of a valid target 
-                
-               //in case of jump move, we need to update the 'jumped over' cell data as well;
-               
-//               if ( jumpedCell1 != NULL && targetSelected == TARGET_CLICK_1)
-//               {
-//                   DrawCell(jumpedCell1, jumpedCell1->Row, jumpedCell1->Column);
-//                   jumpedCell1->Piece->State = Removed;
-//                   jumpedCell1->Piece = NULL;
-//                   jumpedCell1->IsOccupied = FALSE;
-//                   jumpedCell1->OccupiedBy = 0;
-//               }
-//               
-//               if ( jumpedCell2 != NULL && targetSelected == TARGET_CLICK_2)
-//               {
-//                   DrawCell(jumpedCell2, jumpedCell2->Row, jumpedCell2->Column);
-//                   jumpedCell2->Piece->State = Removed;
-//                   jumpedCell2->Piece = NULL;
-//                   jumpedCell2->IsOccupied = FALSE;
-//                   jumpedCell2->OccupiedBy = 0;
-//               }
-               
-               //end jump specific code
-               
+                              
                //now we have to move the piece to clicked cell
                
                if ( moveSelected != CHANGE_PIECE )

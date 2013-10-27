@@ -50,10 +50,6 @@ PtrCell GetClickedCell(int X, int Y, PtrBoard board)
         
         if ( board->Cells[i].Left < X && board->Cells[i].Right > X && board->Cells[i].Top < Y && board->Cells[i].Bottom > Y )
         {
-            //draws the cross
-            //line(board->Cells[i].Left, board->Cells[i].Top, board->Cells[i].Right, board->Cells[i].Bottom );
-            //line(board->Cells[i].Right, board->Cells[i].Top, board->Cells[i].Left, board->Cells[i].Bottom );
-            
             return &board->Cells[i];
         }
     }
@@ -163,7 +159,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         target1Col = clickedCell->Column + 1;
         target2Col = clickedCell->Column - 1;    
     }
-    else //blue pieces go downwards
+    else //blue pieces go upwards
     {
         target1Row = clickedCell->Row - 1;
         target2Row = clickedCell->Row - 1;
@@ -182,8 +178,8 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
     if ( (target1) == NULL && (target2) == NULL )
        return FALSE;
     
-    PtrCell jumpDest1 = (PtrCell) NULL; //final target 1
-    PtrCell jumpDest2 = (PtrCell) NULL; //final target 2
+    PtrCell jumpDest1 = (PtrCell) NULL; //in case target1 has an opponent cell this represents destination after jump
+    PtrCell jumpDest2 = (PtrCell) NULL; //in case target2 has an opponent cell this represents destination after jump
     
     outtextxy(610, 250, "Iding dest 1 not null");
     
@@ -195,7 +191,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         IdentifyAndHighlightJumpDestinations(&target2, &jumpDest2, clickedCell, turn, board );
     
     //in case of empty white cells
-    if ( (target1) != NULL && (target1)->IsOccupied == 0 )
+    if ( (target1) != NULL && (target1)->IsOccupied == FALSE )
     {
         // Color the destination square
         floodfill( (target1)->Left + 1, (target1)->Bottom - 1 , BORDER_COLOR );
@@ -207,13 +203,22 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
         
         // If the other move was a jump, then assign the appropriate cell, else if
         // the other move was a normal move, then do the same.
-        if (jumpDest2 != NULL) moves[*moveCount].OtherTargetCell = jumpDest2;
-        else if (target2 != NULL) moves[*moveCount].OtherTargetCell = target2;
+        
+        //the other target for this move could be a jump or a normal move,
+        //if it is jump, then jumpDest2 must be non-NULL, (target2 is also non-NULL, but in 
+        // case of jump we go one diagonal ahead, so actual destination is jumpDest, not target)
+        //if it is not a jump but a normal move target2 must be non-NULL
+        
+        //Note: If both jumpDest2 and target2 are NULL, OtherTargetCell will have a garbage value
+        if (jumpDest2 != NULL) 
+            moves[*moveCount].OtherTargetCell = jumpDest2;
+        else if (target2 != NULL)
+            moves[*moveCount].OtherTargetCell = target2;
         
         (*moveCount) += 1;
     }
     
-    if ( (target2) != NULL && (target2)->IsOccupied == 0 )
+    if ( (target2) != NULL && (target2)->IsOccupied == FALSE )
     {
         // Color the destination square
         floodfill( (target2)->Left + 1, (target2)->Bottom - 1 , BORDER_COLOR );
@@ -315,6 +320,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves, int *moveCount
            //now we can check whether the clicked cell was one of the target cells
            //one of the two target cells could be null
            for (int i = 0; i < *moveCount; i++)
+           {    
                if( moves[i].TargetCell != NULL && ( (*clickedTarget)->Row == moves[i].TargetCell->Row && (*clickedTarget)->Column == moves[i].TargetCell->Column ) )
                {
                    //target one was selected as destination
@@ -322,37 +328,33 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves, int *moveCount
                    //return TRUE;
                    return (i+1); // +1 to break out of the while loop
                } 
+           }
            
-           
-               //user clicked on a non-target / non-highlighted cell
-               
-               //1. User clicked on an other piece (To select a different piece for move)
-               //   In this case, we should Re-Identify the targets for newly selected piece              
-               
-               //Identify if a piece whose 'turn' it is was selected or some other thing
-                              
-               //
-               
-               if ( (*clickedTarget)->OccupiedBy == turn)
+           //user clicked on a non-target / non-highlighted cell
+
+           //1. User clicked on an other piece (To select a different piece for move)
+           //   In this case, we should Re-Identify the targets for newly selected piece              
+
+           //Identify if a piece whose 'turn' it is was selected or some other thing
+
+           if ( (*clickedTarget)->OccupiedBy == turn)
+           {
+               //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
+               //we need to identify targets for this new piece
+               outtextxy(550, 80, "change subject");
+
+               //redraw target cells in normal white color
+               for (int i = 0; i < *moveCount; i++)
                {
-                   //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
-                   //we need to identify targets for this new piece
-                   outtextxy(550, 80, "change subject");
-                   
-                       //redraw target cells in normal white color
-                   for (int i = 0; i < *moveCount; i++)
-                   {
-                       if ( moves[i].TargetCell != NULL) 
-                           DrawCell( moves[i].TargetCell, moves[i].TargetCell->Row, 
-                                     moves[i].TargetCell->Column );
-                   }
-                   
-                   return CHANGE_PIECE;
+                   if ( moves[i].TargetCell != NULL) 
+                       DrawCell( moves[i].TargetCell, moves[i].TargetCell->Row, moves[i].TargetCell->Column );
                }
+
+               return CHANGE_PIECE;
+           }
            
-               outtextxy(550, 80, "non target");
-               return FALSE;
-           
+           outtextxy(550, 80, "non target");
+           return FALSE;   
        }
     }
     
