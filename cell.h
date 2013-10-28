@@ -6,7 +6,8 @@
 
 void DrawCell(PtrCell, int, int);
 void IdentifyAndHighlightJumpDestinations(PtrCell *, PtrCell *, PtrCell, int, PtrBoard);
-
+void SetTargetCoords(int *,int *,int *,int *,int *,int *,int *,int *, int, int, PtrCell);
+void GetMove( PtrCell , PtrCell , PtrCell[] , int , PtrMove , PtrBoard , int );
 
 /* @description : Used to draw the rectangular ceell on board.
  * 
@@ -104,12 +105,9 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
 
 int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *target2, PtrBoard board)
 {
-       //identify targets : Piece can only move in diagonals ( in white cells )
-
-       //max 2 targets are possible for a move, minimum 0
-
+       //max 2 targets are possible for a normal (non-King) move, minimum 0        
        int target1Row, target2Row, target1Col, target2Col;
-
+       
        if ( turn == RED )   //red piece go downwards
        {
             target1Row = selectedCell->Row + 1;
@@ -126,10 +124,12 @@ int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *t
             target1Col = selectedCell->Column + 1;
             target2Col = selectedCell->Column - 1; 
        }
-
+              
        *target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE);
 
        *target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE);
+       
+       
 
        // If both targets are null, user must again select the piece to complete the move
        if ( (*target1) == NULL && (*target2) == NULL )
@@ -139,45 +139,97 @@ int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *t
        //now, targets have been identified and highlighted
 }
 
-int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCount, int turn, PtrBoard board)
+int IdentifyAndHighlightTargets(PtrCell clickedCell, Move moves[], int *moveCount, int turn, PtrBoard board)
 {
     PtrCell target1, target2; //Declaring temporary PtrCells to hold the targets
         
     *moveCount = 0;           // Re-initializing the moveCount so it overwrites 
                               // the existing moveArray
+    moves = NULL;
+    Move moves[4];
     
+    int possibleTargets = 2;
     //identify targets : Piece can only move in diagonals ( in white cells )
-    //max 2 targets are possible for a move, minimum 0
-
+ 
+    //max 2 targets are possible for a normal (non-King) move, minimum 0        
     int target1Row, target2Row, target1Col, target2Col;
+       
+    // in case of kings, we have two more targets to consider
+    int target3Row, target4Row, target3Col, target4Col;
 
-    if ( turn == RED )   //red piece go downwards
-    {
-        target1Row = clickedCell->Row + 1;
-        target2Row = clickedCell->Row + 1;
-
-        target1Col = clickedCell->Column + 1;
-        target2Col = clickedCell->Column - 1;    
-    }
-    else //blue pieces go upwards
-    {
-        target1Row = clickedCell->Row - 1;
-        target2Row = clickedCell->Row - 1;
-
-        target1Col = clickedCell->Column + 1;
-        target2Col = clickedCell->Column - 1; 
-    }
-
+    SetTargetCoords(&target1Col, &target1Row, &target2Col, &target2Row, 
+                    &target3Col, &target3Row, &target4Col, &target4Row,
+                    turn, clickedCell->Piece->IsKing, clickedCell );
+       
+    //TODO: do this using array of target co-ords
+    PtrCell targets[4]; // = (PtrCell *)malloc( 4 * sizeof(PtrCell) );
+    
     target1 = GetCellByRowColumn(target1Row, target1Col, board, TRUE, turn);
 
     target2 = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
+        
+    if ( clickedCell->Piece->IsKing )
+    {
+        possibleTargets = 4;
+//        *(targets + 0) = GetCellByRowColumn(target1Row, target1Col, board, TRUE, turn);
+//        *(targets + 1) = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
+//        *(targets + 2) = GetCellByRowColumn(target3Row, target3Col, board, TRUE, turn);
+//        *(targets + 3) = GetCellByRowColumn(target4Row, target4Col, board, TRUE, turn);
+        targets[0] = GetCellByRowColumn(target1Row, target1Col, board, TRUE, turn);
+        targets[1] = GetCellByRowColumn(target2Row, target2Col, board, TRUE, turn);
+        targets[2] = GetCellByRowColumn(target3Row, target3Col, board, TRUE, turn);
+        targets[3] = GetCellByRowColumn(target4Row, target4Col, board, TRUE, turn);
+    }
+    else
+    {
+        targets[0] = target1;
+        targets[1] = target2;
+    }
+    
+    //my added code
+    if ( clickedCell->Piece->IsKing )
+    {
+        for(int m = 0; m < possibleTargets; m++)
+        {
+            GetMove( clickedCell, targets[m], targets, turn, &moves[m], board, possibleTargets );
+        }
+    }
+    else
+    {
+        for(int m = 0; m < possibleTargets; m++)
+        {
+            GetMove( clickedCell, targets[m], targets, turn, &moves[m], board, possibleTargets );
+        }
+    }
+    //end added code
     
     setfillstyle(SOLID_FILL, YELLOW);
 
     //if both targets are null, user must again select the piece to complete the move
-    if ( (target1) == NULL && (target2) == NULL )
+    if ( (target1) == NULL && (target2) == NULL && !clickedCell->Piece->IsKing )
        return FALSE;
     
+    //my added
+    
+    if ( targets[0] == NULL && targets[1] == NULL && targets[2] == NULL && targets[3] == NULL && clickedCell->Piece->IsKing )
+        return FALSE;
+    
+    //highlight
+    for(int m = 0; m < possibleTargets; m++)
+    {
+      //  if ( moves[m] != NULL)
+       // {
+            PtrCell target = moves[m].TargetCell;
+        
+            if ( target != NULL)
+                floodfill( (target)->Left + 1, (target)->Bottom - 1 , BORDER_COLOR );
+    
+       // }
+    }
+    
+    //end add
+    
+    /*
     PtrCell jumpDest1 = (PtrCell) NULL; //in case target1 has an opponent cell this represents destination after jump
     PtrCell jumpDest2 = (PtrCell) NULL; //in case target2 has an opponent cell this represents destination after jump
     
@@ -300,7 +352,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves, int *moveCou
        outtextxy(620, 340, "Dest 2 is null");
        if ( target2 != NULL && target2->IsOccupied ) (target2) = NULL;
     }
-
+    */
     return TRUE;
     //now, targets have been identified and highlighted
 }
@@ -469,5 +521,213 @@ void PrintRC(PtrCell cell, int x, int y)
     }
 }
 
-#endif	/* CELL_H */
+void SetTargetCoords(int * target1Col,int * target1Row,int * target2Col,int * target2Row, 
+                       int * target3Col,int * target3Row,int * target4Col,int * target4Row,
+                       int turn, int isKing, PtrCell selectedCell)
+{
 
+    if (isKing)
+    {
+        //kings can move up AND down
+        *target1Row = selectedCell->Row - 1;
+        *target2Row = selectedCell->Row - 1;
+        *target3Row = selectedCell->Row + 1;
+        *target4Row = selectedCell->Row + 1;
+         
+        *target1Col = selectedCell->Column - 1;
+        *target2Col = selectedCell->Column + 1;
+        *target3Col = selectedCell->Column - 1;
+        *target4Col = selectedCell->Column + 1;
+        
+        return;
+    }
+    
+   if ( turn == RED )   //red piece go downwards
+   {
+        *target1Row = selectedCell->Row + 1;
+        *target2Row = selectedCell->Row + 1;
+
+        *target1Col = selectedCell->Column + 1;
+        *target2Col = selectedCell->Column - 1;    
+   }
+
+   if ( turn == BLUE ) //blue pieces go downwards
+   {
+        *target1Row = selectedCell->Row - 1;
+        *target2Row = selectedCell->Row - 1;
+
+        *target1Col = selectedCell->Column + 1;
+        *target2Col = selectedCell->Column - 1; 
+   }
+
+}
+
+void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int turn, PtrMove move, PtrBoard board, int noOfPieces)
+{
+    //return a filled in and configured move structure
+    // All three conditions are mutually exclusive
+    if ( target == NULL )
+    {
+//        move->TargetCell = NULL;
+//        move->isJump = FALSE;
+//        move->JumpedCell = NULL;
+//        move->CurrentCell = currentCell;
+//        move->OtherTargetCells = NULL;
+//        move->Piece = currentCell->Piece;
+        move = NULL; 
+//        *move = NULL;
+        
+        return; //no need to get other pieces for this move since it has no target to move to
+    }
+    
+    if ( target != NULL && target->IsOccupied == FALSE)
+    {
+        //this is a normal empty cell, it'll lead to a normal move
+        move->TargetCell = target;
+        move->isJump = FALSE;
+        move->JumpedCell = NULL;
+        move->CurrentCell = currentCell;
+        move->Piece = currentCell->Piece;
+    }
+    
+    if ( target != NULL && target->IsOccupied ) //contains opponent piece
+    {
+        //move is valid only if jump is possible
+        PtrCell jumpDest = NULL;
+        
+        IdentifyAndHighlightJumpDestinations(&target, &jumpDest, currentCell, turn, board);
+        
+        if ( jumpDest != NULL )
+        {
+            //move valid
+            move->TargetCell = jumpDest;
+            move->isJump = TRUE;
+            move->JumpedCell = target;
+            move->CurrentCell = currentCell;
+            move->Piece = currentCell->Piece;  
+        }
+        else
+        {
+            move = NULL;
+//            *move = NULL;
+            return; //not a valid move, no need bothering for otherTargetCells.
+        }
+    }
+
+    //this for-loop identifies other targets possible for this move
+    for(int i = 0, j = 0; i < noOfPieces; i++, j++ )
+    {
+        if ( otherTargets[i] != NULL && (otherTargets[i]->Row == target->Row && otherTargets[i]->Column == target->Column) )
+        {
+            --j; continue;
+        }
+        else 
+        {
+            //else can be reached when the otherTarget is NULL.
+
+            //check if this is empty cell
+            if ( otherTargets[i] != NULL )
+            {
+                if ( otherTargets[i]->IsOccupied == FALSE )
+                    move->OtherTargetCells[j] = otherTargets[i];
+                else
+                {
+                    //if above if-test fails then by definition of GetCell function
+                    //this cell must be containing an opponent piece
+                    //now two possibilities
+                    //1. next diagonal is available, jump is possible
+                    //2. non-available, jump not possible
+
+                    PtrCell jumpDestination = (PtrCell)NULL;
+
+                    IdentifyAndHighlightJumpDestinations(&otherTargets[i], &jumpDestination,currentCell, turn, board );
+
+                    //now if this 'otherTarget' is actually a cell containing an opponent piece, AND next diagonal is
+                    // available jumpDest won't be NULL.
+
+                    if ( jumpDestination != NULL)
+                    {
+                        move->OtherTargetCells[j] = jumpDestination;
+                    }
+                    else
+                    {
+                        //jump is not possible, so this is not a valid target for this move
+                        move->OtherTargetCells[j] = NULL; //otherTargets[i];
+                    }
+                }
+            }
+            else // in case cell is null
+            {
+                move->OtherTargetCells[j] = NULL;
+            }
+        }
+    }
+    
+    if ( currentCell->Piece->IsKing == FALSE)
+    {
+        move->OtherTargetCells[2] = NULL;
+        move->OtherTargetCells[1] = NULL;
+        
+    }
+}
+
+int InterceptTargetClicksY(PtrCell * clickedTarget, PtrMove moves, int *moveCount, int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
+{   
+    getmouseclick(WM_LBUTTONDOWN, *targetX, *targetY);
+
+    
+    int noPieces = 2;
+        
+    if ( ! ( *targetX == -1 && *targetY == -1 ) )
+    {
+       //check whether the correct target is selecting using X,Y co-ords
+
+       *clickedTarget = GetClickedCell(*targetX, *targetY, board );
+
+       if ( (*clickedTarget) != NULL ) //this check ensures that at least user clicked on a 'cell' and no where else on screen
+       {
+           if  ( isKing ) noPieces = 4;
+           //now we can check whether the clicked cell was one of the target cells
+           //one of the two target cells could be null
+           for (int i = 0; i < noPieces; i++)
+           {    
+               if( (moves + i) != NULL && moves[i].TargetCell != NULL && ( (*clickedTarget)->Row == moves[i].TargetCell->Row && (*clickedTarget)->Column == moves[i].TargetCell->Column ) )
+               {
+                   //target one was selected as destination
+                   outtextxy(550, 60, "target 1");
+                   //return TRUE;
+                   return (i+1); // +1 to break out of the while loop
+               } 
+           }
+           
+           //user clicked on a non-target / non-highlighted cell
+
+           //1. User clicked on an other piece (To select a different piece for move)
+           //   In this case, we should Re-Identify the targets for newly selected piece              
+
+           //Identify if a piece whose 'turn' it is was selected or some other thing
+
+           if ( (*clickedTarget)->OccupiedBy == turn)
+           {
+               //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
+               //we need to identify targets for this new piece
+               outtextxy(550, 80, "change subject");
+
+               //redraw target cells in normal white color
+               for (int i = 0; i < noPieces; i++)
+               {
+                   if ( (moves + i) != NULL && moves[i].TargetCell != NULL) 
+                       DrawCell( moves[i].TargetCell, moves[i].TargetCell->Row, moves[i].TargetCell->Column );
+               }
+
+               return CHANGE_PIECE;
+           }
+           
+           outtextxy(550, 80, "non target");
+           return FALSE;   
+       }
+    }
+    
+    return FALSE;
+}
+#endif	/* CELL_H */

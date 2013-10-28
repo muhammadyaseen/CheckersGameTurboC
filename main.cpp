@@ -17,6 +17,12 @@ int main(void)
    //Draws the initial state of board
    DrawBoard( &CheckersBoard );
    
+   //set two pieces as king, for testing
+//   PtrCell test1 = GetCellByRowColumn(2,3, &CheckersBoard);//, FALSE, BLUE);
+//   test1->Piece->IsKing = TRUE;
+//   PtrCell test2 = GetCellByRowColumn(5,4, &CheckersBoard);//, FALSE, BLUE);
+//   test2->Piece->IsKing = TRUE;
+   
    settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
    
    outtextxy(700, 90,"No Piece Selected");
@@ -29,7 +35,9 @@ int main(void)
    
    strcpy(turnColor, "RED");
    
-   PtrMove moves = (PtrMove) malloc(sizeof(Move) * 4);
+   Move moves[4];
+   
+   //PtrMove moves = (PtrMove) malloc(sizeof(Move) * 4); //provision for 4 moves
    
    int moveCount = 0;
    
@@ -64,12 +72,7 @@ int main(void)
            {              
                //user has selected the correct piece, now we have to identify the possible targets for the move
                PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
-               
-               PtrCell target1 = NULL, target2 = NULL; //represent cells with jumped over pieces in case of a jump, empty highlighted cells otherwise
-               PtrCell jumpedCell1 = NULL, jumpedCell2 = NULL; // represent targets in case of jump, NULL otherwise
-               
-               //jumpedCell1 = jumpedCell2 = GetCellByRowColumn(0,0, &CheckersBoard, FALSE, turn, FALSE);
-               
+                                            
                if ( !IdentifyAndHighlightTargets(clickedCell, moves, &moveCount, turn, &CheckersBoard ) )
                {
                    selectionChanged = FALSE;
@@ -86,7 +89,7 @@ int main(void)
                //until the the mouse is clicked, this loop will keep on polling the device
                int moveSelected = 0;
                
-               while( ! ( moveSelected = InterceptTargetClicks(&clickedTarget, moves, &moveCount, &mouseX, &mouseY, turn, &CheckersBoard) ) )
+               while( ! ( moveSelected = InterceptTargetClicksY(&clickedTarget, moves, &moveCount, &mouseX, &mouseY, turn, &CheckersBoard, clickedCell->Piece->IsKing) ) )
                {
                   //well, we can wait till the user selects a target
                } //end while for target selection
@@ -97,7 +100,7 @@ int main(void)
                
                if ( moveSelected != CHANGE_PIECE )
                {
-                   MovePiece(&moves[moveSelected - 1], turn, &CheckersBoard);
+                   MovePieceY(&moves[moveSelected - 1], turn, &CheckersBoard);
 
                    //set values for next turn
                    turn = turn == BLUE ? RED : BLUE; 

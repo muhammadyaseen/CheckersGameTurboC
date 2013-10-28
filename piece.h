@@ -30,11 +30,17 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
     board->Pieces[pieceNo].IsKing = isKing; //we also set this param in MovePiece function
     board->Pieces[pieceNo].State = OnBoard;
     board->Pieces[pieceNo].Type = type;
-    
+        
     board->Pieces[pieceNo].Index = pieceNo;
 
     //store a reference to this piece in cell
     cell->Piece = &board->Pieces[pieceNo];
+    
+    //test code
+    if (cell->Row == 2 && cell->Column == 3) cell->Piece->IsKing = TRUE;
+    
+    if (cell->Row == 5 && cell->Column == 4) cell->Piece->IsKing = TRUE;
+    //end test code
     
     //set draw color of circle / piece
     setcolor(color);
@@ -50,7 +56,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
 
     floodfill( circleX, circleY, color );
     
-    delay(150);
+    //delay(150);
     
     //if the cell contains a kinged piece
     
@@ -234,5 +240,57 @@ void DrawIndicator(PtrBoard board)
     free(numberBlue);
 }
 
+void MovePieceY(PtrMove move, int turn, PtrBoard board)
+{
+    //change previous cell data
+    move->CurrentCell->IsOccupied = FALSE;
+
+    //change target cell data
+
+    move->TargetCell->Piece = move->CurrentCell->Piece;
+    move->TargetCell->IsOccupied = TRUE;
+    move->TargetCell->OccupiedBy = turn;
+
+    move->CurrentCell->Piece = NULL;
+    move->CurrentCell->OccupiedBy = NONE;
+
+    //re draw prev cell
+
+    DrawCell( move->CurrentCell, move->CurrentCell->Row, move->CurrentCell->Column );
+
+    //redraw target cells in normal white color
+
+    if ( move->TargetCell != NULL) DrawCell( move->TargetCell, move->TargetCell->Row, move->TargetCell->Column );
+    
+//    if ( move->OtherTargetCell != NULL && move->OtherTargetCell->IsOccupied == FALSE) 
+//        DrawCell( move->OtherTargetCell, move->OtherTargetCell->Row, move->OtherTargetCell->Column );
+    
+    for(int t = 0; t < 4; t++)
+    {
+        if ( move->OtherTargetCells[t] != NULL )
+            DrawCell( move->OtherTargetCells[t], move->OtherTargetCells[t]->Row, move->OtherTargetCells[t]->Column );
+    }
+    
+    int isKing = FALSE;
+    
+    //determine if the piece is kinged or not, piece is kinged if it reaches the opposite end of the board
+    
+    if ( turn == RED && move->TargetCell->Row == 7 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
+    if ( turn == BLUE && move->TargetCell->Row == 0 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
+
+    //draw piece on target /destination cell
+    DrawPiece( board, move->TargetCell, move->TargetCell->Piece->Index, turn, isKing );
+    
+    // If the move is a jump, then the JumpedCell needs to be updated as well
+    if (move->isJump)
+    {
+       DrawCell(move->JumpedCell, move->JumpedCell->Row, move->JumpedCell->Column);
+       move->JumpedCell->Piece->State = Removed;
+       move->JumpedCell->Piece = NULL;
+       move->JumpedCell->IsOccupied = FALSE;
+       move->JumpedCell->OccupiedBy = NONE;
+    }
+    
+}
 #endif	/* PIECE_H */
 

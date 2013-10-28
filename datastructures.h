@@ -78,7 +78,9 @@ struct Move {
     PtrCell CurrentCell; // Pointer to the cell the piece is currently on
     PtrCell OtherTargetCell; // For functions where the cell would need to be redrawn
     int isJump;          // Whether the move is a jump or a normal  move
-    PtrCell JumpedCell;  // Pointer to the cell that will be jumped over
+    PtrCell JumpedCell;  // Pointer to the cell that will be jumped over, this is the cell that'll be jumped as a result of reaching TargetCell
+    
+    PtrCell OtherTargetCells[3];
 };
 
 #endif
