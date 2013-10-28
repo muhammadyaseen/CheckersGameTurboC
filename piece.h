@@ -8,7 +8,7 @@
 /* 
  * @description : Used to draw the piece, This can be called anywhere you need to draw a piece.
  * 
- * @param - board - Address of the global struct Board variable. We use it to 'fill' in the array entries, as we build the piece
+ * @param - board - sAddress of the global struct Board variable. We use it to 'fill' in the array entries, as we build the piece
  * @param - cell - Address of the cell to which this piece belongs
  * @param - pieceNo - Index of this piece in the Pieces array in Board struct
  * @param - Color used to draw this piece
@@ -37,9 +37,9 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
     cell->Piece = &board->Pieces[pieceNo];
     
     //test code
-    if (cell->Row == 2 && cell->Column == 3) cell->Piece->IsKing = TRUE;
-    
-    if (cell->Row == 5 && cell->Column == 4) cell->Piece->IsKing = TRUE;
+//    if (cell->Row == 2 && cell->Column == 3) cell->Piece->IsKing = TRUE;
+//    
+//    if (cell->Row == 5 && cell->Column == 4) cell->Piece->IsKing = TRUE;
     //end test code
     
     //set draw color of circle / piece
@@ -279,7 +279,7 @@ void MovePieceY(PtrMove move, int turn, PtrBoard board)
     if ( turn == BLUE && move->TargetCell->Row == 0 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
 
     //draw piece on target /destination cell
-    DrawPiece( board, move->TargetCell, move->TargetCell->Piece->Index, turn, isKing );
+    DrawPiece( board, move->TargetCell, move->TargetCell->Piece->Index, turn, move->TargetCell->Piece->IsKing );
     
     // If the move is a jump, then the JumpedCell needs to be updated as well
     if (move->isJump)

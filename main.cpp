@@ -35,7 +35,10 @@ int main(void)
    
    strcpy(turnColor, "RED");
    
-   Move moves[4];
+   PtrMove moves[4];
+   
+   for(int i = 0; i < 4; i++)
+        moves[i] = (PtrMove)malloc( sizeof(Move) );
    
    //PtrMove moves = (PtrMove) malloc(sizeof(Move) * 4); //provision for 4 moves
    
@@ -100,7 +103,7 @@ int main(void)
                
                if ( moveSelected != CHANGE_PIECE )
                {
-                   MovePieceY(&moves[moveSelected - 1], turn, &CheckersBoard);
+                   MovePieceY(moves[moveSelected - 1], turn, &CheckersBoard);
 
                    //set values for next turn
                    turn = turn == BLUE ? RED : BLUE; 
@@ -116,6 +119,12 @@ int main(void)
 
            }
        }
+       
+//       for(int i = 0; i < 4; i++)
+//           free(moves[i]); //moves[i] = (PtrMove)NULL;
+       
+       for(int i = 0; i < 4; i++)
+           moves[i] = (PtrMove) malloc( sizeof(Move) );
    }
 
    closegraph();

@@ -139,7 +139,7 @@ int IdentifyTargets(int turn, PtrCell selectedCell, PtrCell *target1, PtrCell *t
        //now, targets have been identified and highlighted
 }
 
-int IdentifyAndHighlightTargets(PtrCell clickedCell, Move moves[], int *moveCount, int turn, PtrBoard board)
+int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves[], int *moveCount, int turn, PtrBoard board)
 {
     PtrCell target1, target2; //Declaring temporary PtrCells to hold the targets
         
@@ -191,14 +191,14 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, Move moves[], int *moveCoun
     {
         for(int m = 0; m < possibleTargets; m++)
         {
-            GetMove( clickedCell, targets[m], targets, turn, &moves[m], board, possibleTargets );
+            GetMove( clickedCell, targets[m], targets, turn, moves[m], board, possibleTargets );
         }
     }
     else
     {
         for(int m = 0; m < possibleTargets; m++)
         {
-            GetMove( clickedCell, targets[m], targets, turn, &moves[m], board, possibleTargets );
+            GetMove( clickedCell, targets[m], targets, turn, moves[m], board, possibleTargets );
         }
     }
     //end added code
@@ -217,14 +217,14 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, Move moves[], int *moveCoun
     //highlight
     for(int m = 0; m < possibleTargets; m++)
     {
-//        if ( moves[m] != NULL)
-//        {
-            PtrCell target = moves[m].TargetCell;
+        if ( (moves + m) != NULL)
+        {
+            PtrCell target = moves[m]->TargetCell;
         
-            if ( target != NULL)
+            if ( target != NULL && target->IsOccupied == FALSE)
                 floodfill( (target)->Left + 1, (target)->Bottom - 1 , BORDER_COLOR );
     
-        //}
+        }
     }
     
     //end add
@@ -564,6 +564,12 @@ void SetTargetCoords(int * target1Col,int * target1Row,int * target2Col,int * ta
 
 void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int turn, PtrMove move, PtrBoard board, int noOfPieces)
 {
+    if ( currentCell->Piece->IsKing == FALSE)
+    {
+        move->OtherTargetCells[2] = NULL;
+        move->OtherTargetCells[1] = NULL;  
+    }
+        
     //return a filled in and configured move structure
     // All three conditions are mutually exclusive
     if ( target == NULL )
@@ -662,16 +668,9 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
             }
         }
     }
-    
-    if ( currentCell->Piece->IsKing == FALSE)
-    {
-        move->OtherTargetCells[2] = NULL;
-        move->OtherTargetCells[1] = NULL;
-        
-    }
 }
 
-int InterceptTargetClicksY(PtrCell * clickedTarget, PtrMove moves, int *moveCount, int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
+int InterceptTargetClicksY(PtrCell * clickedTarget, PtrMove moves[], int *moveCount, int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
 {   
     getmouseclick(WM_LBUTTONDOWN, *targetX, *targetY);
 
@@ -691,7 +690,7 @@ int InterceptTargetClicksY(PtrCell * clickedTarget, PtrMove moves, int *moveCoun
            //one of the two target cells could be null
            for (int i = 0; i < noPieces; i++)
            {    
-               if( (moves + i) != NULL && moves[i].TargetCell != NULL && ( (*clickedTarget)->Row == moves[i].TargetCell->Row && (*clickedTarget)->Column == moves[i].TargetCell->Column ) )
+               if( (moves + i) != NULL && moves[i]->TargetCell != NULL && ( (*clickedTarget)->Row == moves[i]->TargetCell->Row && (*clickedTarget)->Column == moves[i]->TargetCell->Column ) )
                {
                    //target one was selected as destination
                    outtextxy(550, 60, "target 1");
@@ -716,8 +715,8 @@ int InterceptTargetClicksY(PtrCell * clickedTarget, PtrMove moves, int *moveCoun
                //redraw target cells in normal white color
                for (int i = 0; i < noPieces; i++)
                {
-                   if ( (moves + i) != NULL && moves[i].TargetCell != NULL) 
-                       DrawCell( moves[i].TargetCell, moves[i].TargetCell->Row, moves[i].TargetCell->Column );
+                   if ( (moves + i) != NULL && moves[i]->TargetCell != NULL) 
+                       DrawCell( moves[i]->TargetCell, moves[i]->TargetCell->Row, moves[i]->TargetCell->Column );
                }
 
                return CHANGE_PIECE;
