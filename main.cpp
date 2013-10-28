@@ -38,7 +38,7 @@ int main(void)
    PtrMove moves[4];
    
    for(int i = 0; i < 4; i++)
-        moves[i] = (PtrMove)malloc( sizeof(Move) );
+        moves[i] = (PtrMove)calloc( 1, sizeof(Move) );
    
    //PtrMove moves = (PtrMove) malloc(sizeof(Move) * 4); //provision for 4 moves
    
@@ -124,7 +124,7 @@ int main(void)
 //           free(moves[i]); //moves[i] = (PtrMove)NULL;
        
        for(int i = 0; i < 4; i++)
-           moves[i] = (PtrMove) malloc( sizeof(Move) );
+           moves[i] = (PtrMove) calloc(1,  sizeof(Move) );
    }
 
    closegraph();
