@@ -217,14 +217,14 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, Move moves[], int *moveCoun
     //highlight
     for(int m = 0; m < possibleTargets; m++)
     {
-      //  if ( moves[m] != NULL)
-       // {
+//        if ( moves[m] != NULL)
+//        {
             PtrCell target = moves[m].TargetCell;
         
             if ( target != NULL)
                 floodfill( (target)->Left + 1, (target)->Bottom - 1 , BORDER_COLOR );
     
-       // }
+        //}
     }
     
     //end add
