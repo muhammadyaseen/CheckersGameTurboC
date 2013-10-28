@@ -265,7 +265,7 @@ void MovePieceY(PtrMove move, int turn, PtrBoard board)
 //    if ( move->OtherTargetCell != NULL && move->OtherTargetCell->IsOccupied == FALSE) 
 //        DrawCell( move->OtherTargetCell, move->OtherTargetCell->Row, move->OtherTargetCell->Column );
     
-    for(int t = 0; t < 4; t++)
+    for(int t = 0; t < 3; t++)
     {
         if ( move->OtherTargetCells[t] != NULL )
             DrawCell( move->OtherTargetCells[t], move->OtherTargetCells[t]->Row, move->OtherTargetCells[t]->Column );

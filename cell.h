@@ -145,8 +145,8 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, Move moves[], int *moveCoun
         
     *moveCount = 0;           // Re-initializing the moveCount so it overwrites 
                               // the existing moveArray
-    moves = NULL;
-    Move moves[4];
+//    moves = NULL;
+//    Move moves[4];
     
     int possibleTargets = 2;
     //identify targets : Piece can only move in diagonals ( in white cells )
@@ -574,7 +574,7 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
 //        move->CurrentCell = currentCell;
 //        move->OtherTargetCells = NULL;
 //        move->Piece = currentCell->Piece;
-        move = NULL; 
+        move = NULL; //make pointer to this move NULL
 //        *move = NULL;
         
         return; //no need to get other pieces for this move since it has no target to move to
@@ -610,7 +610,7 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
         {
             move = NULL;
 //            *move = NULL;
-            return; //not a valid move, no need bothering for otherTargetCells.
+            return; //not a valid move, possible jump is blocked . no need bothering for otherTargetCells.
         }
     }
 
