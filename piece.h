@@ -126,10 +126,10 @@ void DrawIndicator(PtrBoard board)
     
     int x = 650, y = 500;
     
-    outtextxy(x, y, "RED : ");
+    outtextxy( x, y, "RED : ");
     outtextxy( x, y+30, itoa(redPieces, numberRed, 10) );
     
-    outtextxy(x, y+60, "BLUE : ");
+    outtextxy( x, y+60, "BLUE : ");
     outtextxy( x, y+90, itoa(bluePieces, numberBlue, 10) );
     
     free(numberRed);
@@ -207,41 +207,42 @@ void MovePiece(PtrMove move, int turn, PtrBoard board, int forAI = FALSE)
  * 
  * @return -
  */
-void PlayAITurn(PtrBoard board, int turn)
+void PlayAITurn(PtrBoard board, int AIColor)
 {         
     // Get the Opponent's Color to predict their moves
-    int opponentColor = (turn == RED) ? BLUE : RED;
+    int opponentColor = (AIColor == RED) ? BLUE : RED;
     
-    PieceType AIPiece = (turn == BLUE) ? Blue : Red;
-    PieceType opponentPiece = (turn == BLUE) ? Red : Blue;
+//    PieceType AIPiece = (turn == BLUE) ? Blue : Red;
+//    PieceType opponentPiece = (turn == BLUE) ? Red : Blue;
     
-    // Array to hold all the pieces the AI can control
+    // Array to hold all the pieces the AI or user can control
     Piece AIPieces[ PIECES_COUNT/2 ];
     Piece opponentPieces[ PIECES_COUNT/2 ];
     
-    int numberOfAIPieces = 0; // Holds the number of pieces for use in for loops
+    // Holds the number of pieces for use in for loops
+    int numberOfAIPieces = 0; 
     int numberOfOpponentPieces = 0;
     
     // Goes through all the pieces on the board
-    for (int i = 0; i < (ROW * COL); i++)
+    for (int i = 0; i < (PIECES_COUNT); i++)
     {   
-        // Checks to see if the piece color is indeed blue and on the
-        // the board, that is not removed or "jumped over".
-        if (board->Pieces[i].Type == AIPiece &&   
-            board->Pieces[i].State == OnBoard)
+        // Checks to see whom the piece belongs to and whether it is on the
+        // the board, that is not removed or "jumped over".  
+        if (board->Pieces[i].State == OnBoard)
         {
-            AIPieces[ numberOfAIPieces++ ] =  board->Pieces[i];
-        }
-        else if(board->Pieces[i].Type == AIPiece &&   
-                board->Pieces[i].State == OnBoard)
-        {
-            opponentPieces[ numberOfOpponentPieces++ ] =  board->Pieces[i];
+            if (board->Pieces[i].Type == AIColor)
+                AIPieces[ numberOfAIPieces++ ] = board->Pieces[i];
+            
+            if (board->Pieces[i].Type == opponentColor)
+                opponentPieces[ numberOfOpponentPieces++ ] = board->Pieces[i];
         }
     
-    } // End of AIPieces gathering for-loop
+    } // End of pieces gathering for-loop
+    
+    //========================================================================//
     
     Move possibleMoves[numberOfAIPieces * 4];
-    int numberOfMoves = 0;
+    int numberOfPossibleMoves = 0;
     
     // A buffer to temporarily store the moves so they can be evaluated.
     PtrMove buffer[4];
@@ -252,7 +253,7 @@ void PlayAITurn(PtrBoard board, int turn)
     for (int i = 0; i < numberOfAIPieces; i++)
     {
         // Enters when the function does return targets
-        if (IdentifyAndHighlightTargets(AIPieces[i].Cell, buffer, turn, board, TRUE))
+        if (IdentifyAndHighlightTargets(AIPieces[i].Cell, buffer, AIColor, board, TRUE))
         {
             // If a target exists, it stores all the data in the PossibleMoves 
             // array
@@ -260,48 +261,188 @@ void PlayAITurn(PtrBoard board, int turn)
             {
                 if ( (*buffer[j]).TargetCell != NULL )
                 {
-                    possibleMoves[numberOfMoves++] = *buffer[j];                    
+                    possibleMoves[numberOfPossibleMoves] = *buffer[j];
+                    possibleMoves[numberOfPossibleMoves].movePriority = 0;
+                    
+                    numberOfPossibleMoves++;
                 }
             }    
         }
         
     } // End of PossibleMoves calculating for-loop
     
-    Move goodMoves[numberOfMoves];
+    //========================================================================//
+    
+    Move opponentMoves[numberOfOpponentPieces * 4];
+    int numberOfOpponentMoves = 0;
+    
+    // Resetting the buffer
+    for(int i = 0; i < 4; i++)
+        buffer[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
+    
+    for (int i = 0; i < numberOfOpponentPieces; i++)
+    {
+        // Enters when the function does return targets
+        if (IdentifyAndHighlightTargets(opponentPieces[i].Cell, buffer, opponentColor, board, TRUE))
+        {
+            // If a target exists, it stores all the data in the PossibleMoves array
+            for (int j = 0; j < 4; j++)
+            {
+                if ( (*buffer[j]).TargetCell != NULL )
+                {
+                    opponentMoves[numberOfOpponentMoves++] = *buffer[j];                    
+                }
+            }    
+        }
+        
+    } // End of OpponentMoves calculating for-loop
+    
+    //========================================================================//
+    
+    Move goodMoves[numberOfPossibleMoves];
     int numberOfGoodMoves = 0;
     
-    for (int i = 0; i < numberOfMoves; i++)
+    // Opponent based moves
+    for(int i = 0; i < numberOfOpponentMoves; i++)
+    {
+        if (opponentMoves[i].isJump)
+        {
+            for(int j = 0; j < numberOfPossibleMoves; j++)
+            {
+                if (possibleMoves[j].TargetCell == opponentMoves[i].TargetCell &&
+                    opponentMoves[i].TargetCell->IsOccupied == FALSE)
+                {
+                    goodMoves[numberOfGoodMoves] =  possibleMoves[j];
+                    goodMoves[numberOfGoodMoves].movePriority = HIGH_PRIORITY;
+                    
+                    numberOfGoodMoves++;
+                }
+            }
+        }
+    }
+    
+    // A bool for whether the move is safe or not
+    int safe = TRUE;
+    
+    // Jump moves
+    for(int i = 0; i < numberOfPossibleMoves; i++)
+    {
+        if (possibleMoves[i].isJump)
+        {
+            safe = TRUE;
+            
+            for(int j = 0; j < numberOfOpponentMoves; j++)
+            {
+                if ( (possibleMoves[i].TargetCell == opponentMoves[j].TargetCell  && // Tests to see if the target cell can be jumped over by an opponent's piece
+                      possibleMoves[i].JumpedCell != opponentMoves[j].CurrentCell) &&// and whether that cell is the jumped piece's target cell or not
+                    
+                        !(possibleMoves[i].TargetCell->Column == 7 ||                    // All of this checks whether the move finishes on the edge of the board
+                          possibleMoves[i].TargetCell->Column == 0 ||                    // since those are safe spots and should not make the safe bool false
+                          possibleMoves[i].TargetCell->Row == 7    ||
+                          possibleMoves[i].TargetCell->Row == 0       )               )
+                {
+                    safe = FALSE;
+                    break;
+                }
+            }
+            
+            if (safe)
+            {
+                goodMoves[numberOfGoodMoves] =  possibleMoves[i];
+                goodMoves[numberOfGoodMoves].movePriority = MODERATE_PRIORITY;
+
+                numberOfGoodMoves++;
+            }
+        }
+    }
+    
+    // Position based moves
+    for (int i = 0; i < numberOfPossibleMoves; i++)
     {
         if (possibleMoves[i].TargetCell->Column == 7 ||
-            possibleMoves[i].TargetCell->Column == 0)
+            possibleMoves[i].TargetCell->Column == 0 ||
+            possibleMoves[i].TargetCell->Row == 7 ||
+            possibleMoves[i].TargetCell->Row == 0)
         {
             goodMoves[numberOfGoodMoves] =  possibleMoves[i];
-            goodMoves[numberOfGoodMoves].movePriority = MODERATE_PRIORITY;
+            goodMoves[numberOfGoodMoves].movePriority = LOW_PRIORITY;
             
             numberOfGoodMoves++;
         }
+        
     }
+    
+    //========================================================================//
+    
+    Move highPriorityMoves[numberOfGoodMoves];
+    Move moderatePriorityMoves[numberOfGoodMoves];
+    Move lowPriorityMoves[numberOfGoodMoves];
+    
+    int numberOfHighPriorityMoves = 0;
+    int numberOfModeratePriorityMoves = 0;
+    int numberOfLowPriorityMoves = 0;
+    
+    for(int i = 0; i < numberOfGoodMoves; i++)
+    {
+        if(goodMoves[i].movePriority == HIGH_PRIORITY)
+            highPriorityMoves[numberOfHighPriorityMoves++] = goodMoves[i];
+        
+        if(goodMoves[i].movePriority == MODERATE_PRIORITY)
+            moderatePriorityMoves[numberOfModeratePriorityMoves++] = goodMoves[i];
+        
+        if(goodMoves[i].movePriority == LOW_PRIORITY)
+            lowPriorityMoves[numberOfLowPriorityMoves++] = goodMoves[i];
+        
+    }
+    
+    //========================================================================//
     
     // Delay
     delay(1500);
     
     int moveIndex; 
     
-    if(numberOfGoodMoves == 0)
+    if(numberOfHighPriorityMoves != 0)
     {
         // Randomly select a move
-        moveIndex = rand() % numberOfMoves;
+        moveIndex = rand() % numberOfHighPriorityMoves;
 
         // Moves the piece
-        MovePiece(&possibleMoves[moveIndex], turn, board, TRUE);
+        MovePiece(&highPriorityMoves[moveIndex], AIColor, board, TRUE);
     }
-    else
+    else if(numberOfModeratePriorityMoves != 0)
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfModeratePriorityMoves;
+
+        // Moves the piece
+        MovePiece(&moderatePriorityMoves[moveIndex], AIColor, board, TRUE);
+    }
+    else if(numberOfLowPriorityMoves != 0)
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfLowPriorityMoves;
+
+        // Moves the piece
+        MovePiece(&lowPriorityMoves[moveIndex], AIColor, board, TRUE);
+    }
+    else if(numberOfGoodMoves != 0)
     {
         // Randomly select a move
         moveIndex = rand() % numberOfGoodMoves;
 
         // Moves the piece
-        MovePiece(&goodMoves[moveIndex], turn, board, TRUE);
+        MovePiece(&goodMoves[moveIndex], AIColor, board, TRUE);
+
+    }
+    else
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfPossibleMoves;
+
+        // Moves the piece
+        MovePiece(&possibleMoves[moveIndex], AIColor, board, TRUE);
+        
     }
 }
 
