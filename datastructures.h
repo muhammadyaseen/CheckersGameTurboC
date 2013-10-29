@@ -15,6 +15,10 @@
 #define TARGET_CLICK_2 2  //return 2 if 2nd target was clicked
 #define NONE -404         //when a cell is not occupied by RED or BLUE
 
+#define HIGH_PRIORITY 100
+#define MODERATE_PRIORITY 50 
+#define LOW_PRIORITY 25
+
 enum PieceType { Red, Blue };
 enum PieceState { OnBoard, Removed };
 enum GameState { Welcome, Playing, PlayerWin, CPUWin };

@@ -7,7 +7,7 @@
 void DrawCell(PtrCell, int, int);
 void IdentifyAndHighlightJumpDestinations(PtrCell *, PtrCell *, PtrCell, int, PtrBoard, int);
 void SetTargetCoords(int *,int *,int *,int *,int *,int *,int *,int *, int, PtrCell);
-void GetMove( PtrCell , PtrCell , PtrCell[] , int , PtrMove , PtrBoard , int );
+void GetMove( PtrCell , PtrCell , PtrCell[] , int , PtrMove , PtrBoard , int, int );
 
 /* @description : Used to draw the rectangular ceell on board.
  * 
@@ -158,7 +158,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves[], int turn, 
     //Get a configured move structure for each individual target. i.e. construct a move for each target
     for(int m = 0; m < possibleTargets; m++)
     {
-        GetMove( clickedCell, targets[m], targets, turn, moves[m], board, possibleTargets );
+        GetMove( clickedCell, targets[m], targets, turn, moves[m], board, possibleTargets, forAI );
     }
     
     //highlight targets of all possible non-NULL moves
@@ -185,7 +185,7 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves[], int turn, 
  * 
  * @note - if for this 'jumpedOverCell', 'finalDestination' is not avaialable i.e. to say jump isn't possible, 'finalDestination' will be NULL
  */
- void IdentifyAndHighlightJumpDestinations(PtrCell * jumpedOverCell, PtrCell * finalDestination, PtrCell clickedCell, int turn, PtrBoard board, int forAI = FALSE)
+ void IdentifyAndHighlightJumpDestinations(PtrCell * jumpedOverCell, PtrCell * finalDestination, PtrCell clickedCell, int turn, PtrBoard board, int forAI)
 {
     
     //in case when white cell is occupied by opponent piece
@@ -388,7 +388,7 @@ void SetTargetCoords(int * target1Col,int * target1Row,int * target2Col,int * ta
  * 
  * @return - A filled in and configured move structure
  */
-void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int turn, PtrMove move, PtrBoard board, int noOfPieces)
+void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int turn, PtrMove move, PtrBoard board, int noOfPieces, int forAI)
 {
     if ( currentCell->Piece->IsKing == FALSE)
     {
@@ -421,7 +421,7 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
         //move is valid only if jump is possible
         PtrCell jumpDest = NULL;
         
-        IdentifyAndHighlightJumpDestinations(&target, &jumpDest, currentCell, turn, board);
+        IdentifyAndHighlightJumpDestinations(&target, &jumpDest, currentCell, turn, board, forAI);
         
         if ( jumpDest != NULL )
         {
@@ -467,7 +467,7 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
 
                     PtrCell jumpDestination = (PtrCell)NULL;
 
-                    IdentifyAndHighlightJumpDestinations(&otherTargets[i], &jumpDestination,currentCell, turn, board );
+                    IdentifyAndHighlightJumpDestinations(&otherTargets[i], &jumpDestination,currentCell, turn, board, forAI );
 
                     //now if this 'otherTarget' is actually a cell containing an opponent piece, AND next diagonal is
                     // available jumpDest won't be NULL.
