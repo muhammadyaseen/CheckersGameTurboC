@@ -81,24 +81,24 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
  * 
  * @return -
  */
-void MovePieceForAI(PtrBoard board, PtrCell selectedCell , PtrCell target, int turn)
-{
-    //change previous cell data               
-    selectedCell->IsOccupied = FALSE;
-
-    //change target cell data
-    target->Piece = selectedCell->Piece;
-    target->IsOccupied = TRUE;
-
-    selectedCell->Piece = NULL;
-
-    //re draw previous cell
-    DrawCell( selectedCell, selectedCell->Row, selectedCell->Column );
-
-    //draw piece on target cell
-    DrawPiece( board, target, target->Piece->Index, turn );
-    
-}
+//void MovePieceForAI(PtrBoard board, PtrCell selectedCell , PtrCell target, int turn)
+//{
+//    //change previous cell data               
+//    selectedCell->IsOccupied = FALSE;
+//
+//    //change target cell data
+//    target->Piece = selectedCell->Piece;
+//    target->IsOccupied = TRUE;
+//
+//    selectedCell->Piece = NULL;
+//
+//    //re draw previous cell
+//    DrawCell( selectedCell, selectedCell->Row, selectedCell->Column );
+//
+//    //draw piece on target cell
+//    DrawPiece( board, target, target->Piece->Index, turn );
+//    
+//}
 
 /* @description - Used to draw the (sort of) score board, indicating how many pieces are 'OnBoard' of a particular type
  * @param - 
@@ -144,7 +144,7 @@ void DrawIndicator(PtrBoard board)
  * 
  * @return -
  */
-void MovePiece(PtrMove move, int turn, PtrBoard board)
+void MovePiece(PtrMove move, int turn, PtrBoard board, int forAI = FALSE)
 {
     //change previous cell data
     move->CurrentCell->IsOccupied = FALSE;
@@ -168,11 +168,13 @@ void MovePiece(PtrMove move, int turn, PtrBoard board)
     
 //    if ( move->OtherTargetCell != NULL && move->OtherTargetCell->IsOccupied == FALSE) 
 //        DrawCell( move->OtherTargetCell, move->OtherTargetCell->Row, move->OtherTargetCell->Column );
-    
-    for(int t = 0; t < 3; t++)
+    if (!forAI)
     {
-        if ( move->OtherTargetCells[t] != NULL )
-            DrawCell( move->OtherTargetCells[t], move->OtherTargetCells[t]->Row, move->OtherTargetCells[t]->Column );
+        for(int t = 0; t < 3; t++)
+        {
+            if ( move->OtherTargetCells[t] != NULL )
+                DrawCell( move->OtherTargetCells[t], move->OtherTargetCells[t]->Row, move->OtherTargetCells[t]->Column );
+        }
     }
     
     int isKing = FALSE;
@@ -208,7 +210,7 @@ void MovePiece(PtrMove move, int turn, PtrBoard board)
 //void PlayAITurn(PtrBoard board, int turn)
 //{         
 //    // Array to hold all the pieces the AI can control
-//    Piece redPieceCells[ PIECES_COUNT/2 ];
+//    Piece redPieces[ PIECES_COUNT/2 ];
 //    
 //    int numberOfPieces = 0; // Holds the number of pieces for use in for loops
 //    
@@ -220,12 +222,12 @@ void MovePiece(PtrMove move, int turn, PtrBoard board)
 //        if (board->Pieces[i].Type == Blue &&   
 //            board->Pieces[i].State == OnBoard)
 //        {
-//            redPieceCells[ numberOfPieces++ ] =  board->Pieces[i];
+//            redPieces[ numberOfPieces++ ] =  board->Pieces[i];
 //        }
 //    
 //    } // End of RedPieces gathering for-loop
 //    
-//    Move possibleMoves[numberOfPieces * 2];
+//    Move possibleMoves[numberOfPieces * 4];
 //    int numberOfMoves = 0;
 //    
 //    PtrCell target1, target2;
@@ -233,14 +235,14 @@ void MovePiece(PtrMove move, int turn, PtrBoard board)
 //    for (int i = 0; i < numberOfPieces; i++)
 //    {
 //        // Enters when the function does return targets
-//        if (IdentifyTargetsForAI(turn, redPieceCells[i].Cell, &target1, &target2, board))
+//        if (IdentifyAndHighlightTargets(redPieces[i]->Cell, possibleMoves[], int *moveCount, int turn, board, TRUE))
 //        {
 //            // If a target exists, it stores all the data in the PossibleMoves 
 //            // array
 //            if ( !(target1 == NULL) )
 //            {
-//                possibleMoves[numberOfMoves].Piece = &redPieceCells[i];
-//                possibleMoves[numberOfMoves].CurrentCell = redPieceCells[i].Cell;
+//                possibleMoves[numberOfMoves].Piece = &redPieces[i];
+//                possibleMoves[numberOfMoves].CurrentCell = redPieces[i].Cell;
 //                possibleMoves[numberOfMoves].TargetCell = target1;
 //                
 //                numberOfMoves++;
@@ -248,8 +250,8 @@ void MovePiece(PtrMove move, int turn, PtrBoard board)
 //            
 //            if ( !(target2 == NULL) )
 //            {
-//                possibleMoves[numberOfMoves].Piece = &redPieceCells[i];
-//                possibleMoves[numberOfMoves].CurrentCell = redPieceCells[i].Cell;
+//                possibleMoves[numberOfMoves].Piece = &redPieces[i];
+//                possibleMoves[numberOfMoves].CurrentCell = redPieces[i].Cell;
 //                possibleMoves[numberOfMoves].TargetCell = target2;
 //                
 //                numberOfMoves++;

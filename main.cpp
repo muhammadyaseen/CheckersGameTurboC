@@ -34,8 +34,6 @@ int main(void)
    for(int i = 0; i < 4; i++)
         moves[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
    
-   int moveCount = 0;
-   
    while(TRUE)
    {
        DrawIndicator(&CheckersBoard);
@@ -68,7 +66,7 @@ int main(void)
                //user has selected the correct piece, now we have to identify the possible targets for the move
                PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
                                             
-               if ( !IdentifyAndHighlightTargets(clickedCell, moves, &moveCount, turn, &CheckersBoard ) )
+               if ( !IdentifyAndHighlightTargets(clickedCell, moves, turn, &CheckersBoard ) )
                {
                    selectionChanged = FALSE;
                    continue;
@@ -84,7 +82,7 @@ int main(void)
                //until the the mouse is clicked, this loop will keep on polling the device
                int moveSelected = 0;
                
-               while( ! ( moveSelected = InterceptTargetClicks(&clickedTarget, moves, &moveCount, &mouseX, &mouseY, turn, &CheckersBoard, clickedCell->Piece->IsKing) ) )
+               while( ! ( moveSelected = InterceptTargetClicks(&clickedTarget, moves, &mouseX, &mouseY, turn, &CheckersBoard, clickedCell->Piece->IsKing) ) )
                {
                   //well, we can wait till the user selects a target
                } //end while for target selection
