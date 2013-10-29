@@ -275,7 +275,7 @@ void MovePieceY(PtrMove move, int turn, PtrBoard board)
     
     //determine if the piece is kinged or not, piece is kinged if it reaches the opposite end of the board
     
-    if ( turn == RED && move->TargetCell->Row == 7 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
+    if ( turn == RED && move->TargetCell->Row == ROW - 1 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
     if ( turn == BLUE && move->TargetCell->Row == 0 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
 
     //draw piece on target /destination cell

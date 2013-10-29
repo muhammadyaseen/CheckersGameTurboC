@@ -35,12 +35,10 @@ int main(void)
    
    strcpy(turnColor, "RED");
    
-   PtrMove moves[4];
+   PtrMove moves[4];  //provision for 4 moves
    
    for(int i = 0; i < 4; i++)
-        moves[i] = (PtrMove)calloc( 1, sizeof(Move) );
-   
-   //PtrMove moves = (PtrMove) malloc(sizeof(Move) * 4); //provision for 4 moves
+        moves[i] = (PtrMove)calloc( 1, sizeof(Move) ); //initializes address to NULL values
    
    int moveCount = 0;
    
@@ -120,9 +118,7 @@ int main(void)
            }
        }
        
-//       for(int i = 0; i < 4; i++)
-//           free(moves[i]); //moves[i] = (PtrMove)NULL;
-       
+       //Re-initialize and free the memory for moves array so that we can flush the information we stored for previous move
        for(int i = 0; i < 4; i++)
            moves[i] = (PtrMove) calloc(1,  sizeof(Move) );
    }
