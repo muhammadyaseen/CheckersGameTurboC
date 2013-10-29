@@ -16,13 +16,7 @@ int main(void)
    
    //Draws the initial state of board
    DrawBoard( &CheckersBoard );
-   
-   //set two pieces as king, for testing
-//   PtrCell test1 = GetCellByRowColumn(2,3, &CheckersBoard);//, FALSE, BLUE);
-//   test1->Piece->IsKing = TRUE;
-//   PtrCell test2 = GetCellByRowColumn(5,4, &CheckersBoard);//, FALSE, BLUE);
-//   test2->Piece->IsKing = TRUE;
-   
+     
    settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
    
    outtextxy(700, 90,"No Piece Selected");
@@ -90,7 +84,7 @@ int main(void)
                //until the the mouse is clicked, this loop will keep on polling the device
                int moveSelected = 0;
                
-               while( ! ( moveSelected = InterceptTargetClicksY(&clickedTarget, moves, &moveCount, &mouseX, &mouseY, turn, &CheckersBoard, clickedCell->Piece->IsKing) ) )
+               while( ! ( moveSelected = InterceptTargetClicks(&clickedTarget, moves, &moveCount, &mouseX, &mouseY, turn, &CheckersBoard, clickedCell->Piece->IsKing) ) )
                {
                   //well, we can wait till the user selects a target
                } //end while for target selection
@@ -101,7 +95,7 @@ int main(void)
                
                if ( moveSelected != CHANGE_PIECE )
                {
-                   MovePieceY(moves[moveSelected - 1], turn, &CheckersBoard);
+                   MovePiece(moves[moveSelected - 1], turn, &CheckersBoard);
 
                    //set values for next turn
                    turn = turn == BLUE ? RED : BLUE; 

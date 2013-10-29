@@ -82,7 +82,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
  * @paraam - clickedTarget - represents the cell user has selected as target / destination
  * @param - turn - color of piece whose turn it is
  */
-void MovePiece(PtrMove move, int turn, PtrBoard board)
+void MovePieceOld(PtrMove move, int turn, PtrBoard board)
 {
     //change previous cell data
     move->CurrentCell->IsOccupied = FALSE;
@@ -240,7 +240,7 @@ void DrawIndicator(PtrBoard board)
     free(numberBlue);
 }
 
-void MovePieceY(PtrMove move, int turn, PtrBoard board)
+void MovePiece(PtrMove move, int turn, PtrBoard board)
 {
     //change previous cell data
     move->CurrentCell->IsOccupied = FALSE;
