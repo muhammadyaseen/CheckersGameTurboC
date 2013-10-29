@@ -74,13 +74,13 @@ struct Board {
 
 struct Move {
     PtrPiece Piece;      // Pointer to the piece that will make the move (subject of move)
-    PtrCell TargetCell;  // Pointer to the cell the piece will be moved to
     PtrCell CurrentCell; // Pointer to the cell the piece is currently on
-    PtrCell OtherTargetCell; // For functions where the cell would need to be redrawn
+    PtrCell TargetCell;  // Pointer to the primary target cell
+    PtrCell OtherTargetCells[3]; // Pointer to the secondary target cells
     int isJump;          // Whether the move is a jump or a normal  move
-    PtrCell JumpedCell;  // Pointer to the cell that will be jumped over, this is the cell that'll be jumped as a result of reaching TargetCell
-    
-    PtrCell OtherTargetCells[3];
+    PtrCell JumpedCell;  // Pointer to the cell that will be jumped over, this is
+                         // the cell that'll be jumped as a result of reaching TargetCell
+    int movePriority;    // For AI: Indicates how urgent the move is
 };
 
 #endif

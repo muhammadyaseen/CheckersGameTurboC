@@ -32,7 +32,7 @@ int main(void)
    PtrMove moves[4];  //provision for 4 moves
    
    for(int i = 0; i < 4; i++)
-        moves[i] = (PtrMove)calloc( 1, sizeof(Move) ); //initializes address to NULL values
+        moves[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
    
    int moveCount = 0;
    
