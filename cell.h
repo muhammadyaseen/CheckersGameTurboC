@@ -231,9 +231,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves, int *moveCount
            for (int i = 0; i < *moveCount; i++)
            {    
                if( moves[i].TargetCell != NULL && ( (*clickedTarget)->Row == moves[i].TargetCell->Row && (*clickedTarget)->Column == moves[i].TargetCell->Column ) )
-               {
-                   //target one was selected as destination
-                   outtextxy(550, 60, "target 1");
+               {                   
                    //return TRUE;
                    return (i+1); // +1 to break out of the while loop
                } 
@@ -250,7 +248,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves, int *moveCount
            {
                //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
                //we need to identify targets for this new piece
-               outtextxy(550, 80, "change subject");
+               outtextxy(HUDLINE + 50, 90, "change subject");
 
                //redraw target cells in normal white color
                for (int i = 0; i < *moveCount; i++)
@@ -262,7 +260,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves, int *moveCount
                return CHANGE_PIECE;
            }
            
-           outtextxy(550, 80, "non target");
+           outtextxy(HUDLINE + 50, 80-30, "Can't move");
            return FALSE;   
        }
     }
@@ -405,16 +403,16 @@ void PrintRC(PtrCell cell, int x, int y)
     
     if ( cell != (PtrCell)NULL )  
     {
-        outtextxy(x,y, "Row : " );
-        outtextxy(x+50,y, itoa(cell->Row,r, 10) );
+        outtextxy(HUDLINE + 50,y, "Row : " );
+        outtextxy(HUDLINE + 50,y, itoa(cell->Row,r, 10) );
         
-        outtextxy(x,y+20, "Col : " );
-        outtextxy(x+50,y+20, itoa(cell->Column,c,10) );
+        outtextxy(HUDLINE + 50,y+20, "Col : " );
+        outtextxy(HUDLINE + 50,y+20, itoa(cell->Column,c,10) );
     }
     else
     {
-        outtextxy(x, y, "Row : N");
-        outtextxy(x,y+20, "Col : N" );
+        outtextxy(HUDLINE + 50, y, "Row : N");
+        outtextxy(HUDLINE + 50,y+20, "Col : N" );
     }
 }
 
@@ -583,9 +581,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], int *moveCou
            for (int i = 0; i < noPieces; i++)
            {    
                if( (moves + i) != NULL && moves[i]->TargetCell != NULL && ( (*clickedTarget)->Row == moves[i]->TargetCell->Row && (*clickedTarget)->Column == moves[i]->TargetCell->Column ) )
-               {
-                   //target one was selected as destination
-                   outtextxy(550, 60, "target 1");
+               {                 
                    //return TRUE;
                    return (i+1); // +1 to break out of the while loop
                } 
@@ -602,7 +598,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], int *moveCou
            {
                //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
                //we need to identify targets for this new piece
-               outtextxy(550, 80, "change subject");
+               outtextxy(HUDLINE + 50, 90, "Change subject");
 
                //redraw target cells in normal white color
                for (int i = 0; i < noPieces; i++)
@@ -614,7 +610,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], int *moveCou
                return CHANGE_PIECE;
            }
            
-           outtextxy(550, 80, "non target");
+           outtextxy(HUDLINE + 50, 90, "Not possible        ");  //space to remove the printed words of no piece selected from the board
            return FALSE;   
        }
     }
