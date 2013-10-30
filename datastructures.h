@@ -22,7 +22,8 @@
 
 enum PieceType { Red, Blue };
 enum PieceState { OnBoard, Removed };
-enum GameState { Welcome, Playing, PlayerWin, CPUWin };
+//enum GameState { Welcome, Playing, PlayerWin, CPUWin };
+enum GameState {Selection, TwoPlayer, VsComputer, Win};
 
 typedef enum PieceType PieceType;
 typedef enum PieceState PieceState;
