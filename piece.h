@@ -4,6 +4,7 @@
 #include "datastructures.h"
 
 void DrawPiece(PtrBoard, PtrCell, int, int, int);
+int NoOfPieces(int *, int *, PtrBoard);
 
 /* 
  * @description : Used to draw the piece, This can be called anywhere you need to draw a piece.
@@ -115,15 +116,17 @@ void DrawIndicator(PtrBoard board)
     
     int bluePieces = 0, redPieces = 0;
     
-    for ( int i = 0; i < PIECES_COUNT; i++)
-    {
-        if ( board->Pieces[i].Type == BLUE && board->Pieces[i].State == OnBoard )
-            bluePieces++;
-        
-        if ( board->Pieces[i].Type == RED && board->Pieces[i].State == OnBoard )
-            redPieces++;
-    }
+//    for ( int i = 0; i < PIECES_COUNT; i++)
+//    {
+//        if ( board->Pieces[i].Type == BLUE && board->Pieces[i].State == OnBoard )
+//            bluePieces++;
+//        
+//        if ( board->Pieces[i].Type == RED && board->Pieces[i].State == OnBoard )
+//            redPieces++;
+//    }
     
+    NoOfPieces(&redPieces, &bluePieces, board);
+     
     int x = 650, y = 500;
     
     outtextxy( x, y, "RED : ");
@@ -444,6 +447,26 @@ void PlayAITurn(PtrBoard board, int AIColor)
         MovePiece(&possibleMoves[moveIndex], AIColor, board, TRUE);
         
     }
+}
+
+int NoOfPieces(int * redPieces, int * bluePieces, PtrBoard board)
+{
+    for ( int i = 0; i < PIECES_COUNT; i++)
+    {
+        if ( board->Pieces[i].Type == BLUE && board->Pieces[i].State == OnBoard )
+            (*bluePieces)++;
+        
+        if ( board->Pieces[i].Type == RED && board->Pieces[i].State == OnBoard )
+            (*redPieces)++;
+    }
+}
+int PiecesLeft(PtrBoard board)
+{
+    int bluePieces = 0, redPieces = 0;
+    
+    NoOfPieces(&redPieces, &bluePieces, board);
+    
+    return bluePieces && redPieces;
 }
 
 #endif	/* PIECE_H */

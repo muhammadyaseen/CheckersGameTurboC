@@ -34,7 +34,7 @@ int main(void)
    for(int i = 0; i < 4; i++)
         moves[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
    
-   while(TRUE)
+   while(PiecesLeft(&CheckersBoard))
    {
        DrawIndicator(&CheckersBoard);
        
