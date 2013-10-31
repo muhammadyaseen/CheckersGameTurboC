@@ -50,7 +50,7 @@
 #define RECT_LENGTH (PLAYER2_RECT_BOTTOM - PLAYER2_RECT_TOP)
 
 GameState gameState;
-int AI_Mode;
+int AI_Mode= FALSE;
 
 //global variables
 int mouseX, mouseY;  //for mouse

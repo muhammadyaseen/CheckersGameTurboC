@@ -13,12 +13,12 @@ Board CheckersBoard;
 
 int main(void)
 {  
-   initwindow(1200, 900);
+   initwindow(1000, 900);
    
     int turn;
     int selectionChanged;
     char * turnColor;
-    PtrMove moves[64];
+    PtrMove moves[5];
    
    //Draws Welcome Screen and Name Screen
    Main_Window();
@@ -39,7 +39,7 @@ int main(void)
    
                outtextxy(700, 90,"No Piece Selected");
    
-                turn = RED;
+               turn = RED;
    
                selectionChanged = FALSE;
    
@@ -162,8 +162,8 @@ int main(void)
            
            case Win: 
            {
-               gameState= Selection;
-               break;
+              gameState= Selection;
+              break;
            }
                
        
