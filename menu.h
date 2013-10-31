@@ -50,7 +50,11 @@
 #define RECT_LENGTH (PLAYER2_RECT_BOTTOM - PLAYER2_RECT_TOP)
 
 GameState gameState;
+<<<<<<< HEAD
 int AI_Mode= FALSE;
+=======
+int AI_Mode = FALSE;
+>>>>>>> bfd58d0dda273f5ddb5a5784ecea2fe4fcfb28fc
 
 //global variables
 int mouseX, mouseY;  //for mouse
@@ -197,56 +201,54 @@ void DrawOptions() {
 
 void InterceptClicks() {
    
-     while (TRUE)
+   while (TRUE)
   {
        getmouseclick( WM_LBUTTONDOWN, mouseX, mouseY );
        
        //2player
-       if ( mouseX>RECT_LEFT && mouseX<RECT_RIGHT && mouseY>PLAYER2_RECT_TOP && mouseY<PLAYER2_RECT_BOTTOM ) {   
-	  setcolor(YELLOW);
-	  rectangle(RECT_LEFT, PLAYER2_RECT_TOP, RECT_RIGHT, PLAYER2_RECT_BOTTOM );
-        
-          setcolor(WHITE);
-	  rectangle (RECT_LEFT, VSCOMP_RECT_TOP, RECT_RIGHT, VSCOMP_RECT_BOTTOM );
-	  rectangle (RECT_LEFT, EXIT_RECT_TOP, RECT_RIGHT, EXIT_RECT_BOTTOM );
+       if ( mouseX>RECT_LEFT && mouseX<RECT_RIGHT && mouseY>PLAYER2_RECT_TOP && mouseY<PLAYER2_RECT_BOTTOM )
+       {   
+            setcolor(YELLOW);
+            rectangle(RECT_LEFT, PLAYER2_RECT_TOP, RECT_RIGHT, PLAYER2_RECT_BOTTOM );
 
-	  //SWITCH TO 2Player 
-          gameState= TwoPlayer;
-          cleardevice();
-          return;
-          
+            setcolor(WHITE);
+            rectangle (RECT_LEFT, VSCOMP_RECT_TOP, RECT_RIGHT, VSCOMP_RECT_BOTTOM );
+            rectangle (RECT_LEFT, EXIT_RECT_TOP, RECT_RIGHT, EXIT_RECT_BOTTOM );
 
+            //SWITCH TO 2Player 
+            gameState= TwoPlayer;
+            cleardevice();
+            return;
        }
        
       //vs comp
-       if( mouseX>RECT_LEFT && mouseX<RECT_RIGHT && mouseY>VSCOMP_RECT_TOP && mouseY<VSCOMP_RECT_BOTTOM ) {
+       if( mouseX>RECT_LEFT && mouseX<RECT_RIGHT && mouseY>VSCOMP_RECT_TOP && mouseY<VSCOMP_RECT_BOTTOM )
+       {
+            setcolor(YELLOW);
+            rectangle (RECT_LEFT, VSCOMP_RECT_TOP, RECT_RIGHT, VSCOMP_RECT_BOTTOM );
 
-	  setcolor(YELLOW);
-	  rectangle (RECT_LEFT, VSCOMP_RECT_TOP, RECT_RIGHT, VSCOMP_RECT_BOTTOM );
+            setcolor(WHITE);
+            rectangle(RECT_LEFT, PLAYER2_RECT_TOP, RECT_RIGHT, PLAYER2_RECT_BOTTOM );
+            rectangle (RECT_LEFT, EXIT_RECT_TOP, RECT_RIGHT, EXIT_RECT_BOTTOM );
 
-	  setcolor(WHITE);
-	  rectangle(RECT_LEFT, PLAYER2_RECT_TOP, RECT_RIGHT, PLAYER2_RECT_BOTTOM );
-	  rectangle (RECT_LEFT, EXIT_RECT_TOP, RECT_RIGHT, EXIT_RECT_BOTTOM );
-          
-	  //SWITCH TO VsComputer 
-          gameState= VsComputer;
-          cleardevice();
-          return;
-          
+            //SWITCH TO VsComputer 
+            gameState= VsComputer;
+            cleardevice();
+            return;
        } 
        
        //exit
-       if( mouseX>RECT_LEFT && mouseX<RECT_RIGHT && mouseY>EXIT_RECT_TOP && mouseY<EXIT_RECT_BOTTOM ) {
+       if( mouseX>RECT_LEFT && mouseX<RECT_RIGHT && mouseY>EXIT_RECT_TOP && mouseY<EXIT_RECT_BOTTOM )
+       {
+            setcolor(YELLOW);
+            rectangle (RECT_LEFT, EXIT_RECT_TOP, RECT_RIGHT, EXIT_RECT_BOTTOM );
 
-	  setcolor(YELLOW);
-	  rectangle (RECT_LEFT, EXIT_RECT_TOP, RECT_RIGHT, EXIT_RECT_BOTTOM );
+            setcolor(WHITE);
+            rectangle(RECT_LEFT, PLAYER2_RECT_TOP, RECT_RIGHT, PLAYER2_RECT_BOTTOM );
+            rectangle (RECT_LEFT, VSCOMP_RECT_TOP, RECT_RIGHT, VSCOMP_RECT_BOTTOM );
 
-	  setcolor(WHITE);
-	  rectangle(RECT_LEFT, PLAYER2_RECT_TOP, RECT_RIGHT, PLAYER2_RECT_BOTTOM );
-	  rectangle (RECT_LEFT, VSCOMP_RECT_TOP, RECT_RIGHT, VSCOMP_RECT_BOTTOM );
-          
-          //terminating point of gameState while loop
-	  exit(0);
+            //terminating point of gameState while loop
+            exit(0);
        }
      
     } //while ends

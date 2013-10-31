@@ -30,8 +30,19 @@ int main(void)
        switch (gameState) 
        {
            case Selection:
-           {
+           
                Selection_Window();
+               
+               break;
+           
+           case VsComputer:
+           
+               AI_Mode= TRUE;
+               gameState= TwoPlayer; //VsComputer has same gameplay as TwoPlayer, we set AI_mode=TRUE, to assign AI the role of 2nd player
+          
+           
+           case TwoPlayer:
+                    
                //Draws the initial state of board
                DrawBoard( &CheckersBoard );
      
@@ -52,17 +63,6 @@ int main(void)
                for(int i = 0; i < 4; i++)
                    moves[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
                
-               break;
-           }
-           
-           case VsComputer:
-           {
-               AI_Mode= TRUE;
-               gameState= TwoPlayer; 
-           }
-           
-           case TwoPlayer:
-           {
                //Game Loop
                 while(PiecesLeft(&CheckersBoard))
                 {
@@ -127,17 +127,21 @@ int main(void)
                                  MovePiece(moves[moveSelected - 1], turn, &CheckersBoard);
 
                                  //set values for next turn
+                                 //in case of AI mode, this transfers the control to AI (fear the AI!)
                                  turn = turn == BLUE ? RED : BLUE; 
                                  strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
                    
                                  selectionChanged = FALSE;
                    
-                                 PlayAITurn(&CheckersBoard, turn);
+                                 if ( AI_Mode ) //if in AI mode, next turn should be taken by AI
+                                 {
+                                     PlayAITurn(&CheckersBoard, turn);
                    
-                                 //set values for next turn
-                                 turn = turn == BLUE ? RED : BLUE; 
-                                 strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
-                   
+                                    //set values for next turn
+                                    //in case of AI, this transfer the control back to player
+                                    turn = turn == BLUE ? RED : BLUE; 
+                                    strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
+                                 }
                              }
                              else
                              {
@@ -156,17 +160,27 @@ int main(void)
               } //while ends (Game Loop)
                 
               gameState= Win;
+              
               break;
             
-           } //case 2player ends
+            //case 2player ends
            
            case Win: 
+<<<<<<< HEAD
            {
               gameState= Selection;
               break;
            }
                
        
+=======
+           
+               gameState = Selection;
+               delay(1500); //1.5 sec delay before wiping out checkers board, so that player can see what happened in the last move
+               cleardevice();
+               break;
+         
+>>>>>>> bfd58d0dda273f5ddb5a5784ecea2fe4fcfb28fc
        } //switch ends
   } //while gameStaet ends
 
