@@ -18,7 +18,6 @@ int main(void)
     int turn;
     int selectionChanged;
     char * turnColor;
-    PtrMove moves[5];
    
    //Draws Welcome Screen and Name Screen
    Main_Window();
