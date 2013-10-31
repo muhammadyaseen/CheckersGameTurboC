@@ -166,21 +166,12 @@ int main(void)
             //case 2player ends
            
            case Win: 
-<<<<<<< HEAD
-           {
-              gameState= Selection;
-              break;
-           }
-               
-       
-=======
            
                gameState = Selection;
                delay(1500); //1.5 sec delay before wiping out checkers board, so that player can see what happened in the last move
                cleardevice();
                break;
-         
->>>>>>> bfd58d0dda273f5ddb5a5784ecea2fe4fcfb28fc
+
        } //switch ends
   } //while gameStaet ends
 

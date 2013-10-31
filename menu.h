@@ -15,7 +15,7 @@
 
 #define HOR_LINE_X1 (VER_LINE_X - 38)
 #define HOR_LINE_X2 (HOR_LINE_X1 + 255)
-#define HOR_LINE_Y (HEIGHT_SCREEN * 0.19) 
+#define HOR_LINE_Y (HEIGHT_SCREEN * 0.185) 
 
 #define L 40
 
@@ -50,11 +50,8 @@
 #define RECT_LENGTH (PLAYER2_RECT_BOTTOM - PLAYER2_RECT_TOP)
 
 GameState gameState;
-<<<<<<< HEAD
+
 int AI_Mode= FALSE;
-=======
-int AI_Mode = FALSE;
->>>>>>> bfd58d0dda273f5ddb5a5784ecea2fe4fcfb28fc
 
 //global variables
 int mouseX, mouseY;  //for mouse
