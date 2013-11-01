@@ -16,9 +16,10 @@ int main(void)
    initwindow(1200, 900);
    
     int turn;
+    int winner;
     int selectionChanged;
     char * turnColor;
-   
+    
    //Draws Welcome Screen and Name Screen
    Main_Window();
    gameState = Selection;
@@ -36,7 +37,7 @@ int main(void)
            
            case VsComputer:
            
-               AI_Mode= TRUE;
+               AI_Mode = TRUE;
                gameState= TwoPlayer; //VsComputer has same gameplay as TwoPlayer, we set AI_mode=TRUE, to assign AI the role of 2nd player
           
            
@@ -45,13 +46,11 @@ int main(void)
                //Draws the initial state of board
                DrawBoard( &CheckersBoard );
                
-               line (HUDLINE,0,HUDLINE,getmaxy()); //Draws the hud line
+               line (VERTICAL_HUDLINE, 0,VERTICAL_HUDLINE,getmaxy()); //Draws the hud line
                /*
                 Will move the files over the hud line with HUDLINE and any further pixels
                */     
                settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
-   
-               outtextxy(HUDLINE + 50, 90,"No Piece Selected");
    
                turn = RED;
    
@@ -67,12 +66,17 @@ int main(void)
                    moves[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
                
                //Game Loop
-                while(PiecesLeft(&CheckersBoard))
+                while(TRUE)
                 {
                     DrawIndicator(&CheckersBoard);
-       
+                    
+                    if(GameOver(&winner, turn, &CheckersBoard))
+                        break;
+                    
+                    
+                    outtextxy(VERTICAL_HUDLINE + 50, 90,"No Piece Selected     ");
                     //turn indicator
-                    strcmp(turnColor, "BLUE") ? outtextxy(HUDLINE + 50, 160, "RED's turn  ") : outtextxy(HUDLINE + 50, 160,"BLUE's turn");
+                    strcmp(turnColor, "BLUE") ? outtextxy(VERTICAL_HUDLINE + 50, 160, "RED's turn  ") : outtextxy(VERTICAL_HUDLINE + 50, 160,"BLUE's turn");
                     //the space removes the extra 'n' after blue turn
                     //check if correct piece is selected
                     if ( !selectionChanged )
@@ -85,18 +89,22 @@ int main(void)
                     {
                          //for ex, it this is blue's turn but user clicks on a red piece
                          //this check tests that scenario
-                         if ( getpixel(mouseX, mouseY) != turn )
+                         if ( GetClickedCell(mouseX, mouseY, &CheckersBoard)->OccupiedBy != turn)
                          {
-                              outtextxy(HUDLINE + 50, 90,"Select correct piece");
+                              outtextxy(VERTICAL_HUDLINE + 50, 90, "Select correct piece");
                
                               if ( turn == RED )
-                                   outtextxy(HUDLINE + 50, 110,"Select RED colored piece");
+                                   outtextxy(VERTICAL_HUDLINE + 50, 110,"Select RED colored piece  ");
                               else 
-                                   outtextxy(HUDLINE + 50, 110,"Select BLUE colored piece");    
+                                   outtextxy(VERTICAL_HUDLINE + 50, 110,"Select BLUE colored piece");    
                          }
                     
                          else
                          {              
+                             // If correct piece has been selected, then overwrite the warning
+                             outtextxy(VERTICAL_HUDLINE + 50, 90, "                        ");
+                             outtextxy(VERTICAL_HUDLINE + 50, 110,"                          ");
+                             
                              //user has selected the correct piece, now we have to identify the possible targets for the move
                              PtrCell clickedCell = GetClickedCell( mouseX, mouseY, &CheckersBoard );
                                             
@@ -133,17 +141,32 @@ int main(void)
                                  //in case of AI mode, this transfers the control to AI (fear the AI!)
                                  turn = turn == BLUE ? RED : BLUE; 
                                  strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
+                                 strcmp(turnColor, "BLUE") ? outtextxy(VERTICAL_HUDLINE + 50, 160, "RED's turn  ") : outtextxy(VERTICAL_HUDLINE + 50, 160,"BLUE's turn");
+                                 
+                                 // Overwrite the indicators in case they might have changed after the move
+                                 outtextxy( VERTICAL_HUDLINE + 115, 600, "   " );
+                                 outtextxy(VERTICAL_HUDLINE + 255, 600, "   " );
                    
                                  selectionChanged = FALSE;
                    
                                  if ( AI_Mode ) //if in AI mode, next turn should be taken by AI
                                  {
-                                     PlayAITurn(&CheckersBoard, turn);
-                   
+                                    // Draw the indicator again for AI
+                                    DrawIndicator(&CheckersBoard);
+
+                                    if(GameOver(&winner, turn, &CheckersBoard))
+                                        break;
+
+                                    PlayAITurn(&CheckersBoard, turn);
+                                     
                                     //set values for next turn
                                     //in case of AI, this transfer the control back to player
                                     turn = turn == BLUE ? RED : BLUE; 
                                     strcmp(turnColor, "RED") ? strcpy(turnColor, "RED") : strcpy(turnColor, "BLUE") ;
+                                    
+                                    // Overwrite the indicators in case they might have changed after the move
+                                    outtextxy( VERTICAL_HUDLINE + 115, 600, "   " );
+                                    outtextxy(VERTICAL_HUDLINE + 255, 600, "   " );
                                  }
                              }
                              else
@@ -157,21 +180,32 @@ int main(void)
                  //Re-initialize and free the memory for moves array so that we can flush the information we stored for previous move
                  for(int i = 0; i < 4; i++)
                       moves[i] = (PtrMove) calloc(1,  sizeof(Move) );
-                    
-             
                 
               } //while ends (Game Loop)
-                
-              gameState= Win;
               
-              break;
-            
             //case 2player ends
            
-           case Win: 
-           
+           case Win:
+           case Draw:
+               setcolor(WHITE);
+               switch (winner)
+               {
+                   case RED:
+                        outtextxy(VERTICAL_HUDLINE + 50, 160, "RED WINS     ");
+                        break;
+                   
+                   case BLUE:
+                       outtextxy(VERTICAL_HUDLINE + 50, 160, "BLUE WINS     ");
+                       break;
+                       
+                   default:
+                       outtextxy(VERTICAL_HUDLINE + 50, 110, "NO MOVES ARE POSSIBLE");
+                       outtextxy(VERTICAL_HUDLINE + 50, 160, "IT'S A DRAW    ");
+                       break;
+               }
+               
                gameState = Selection;
-               delay(1500); //1.5 sec delay before wiping out checkers board, so that player can see what happened in the last move
+               delay(3000); //3 sec delay before wiping out checkers board, so that player can see what happened in the last move
                cleardevice();
                break;
 

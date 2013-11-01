@@ -318,16 +318,16 @@ void PrintRC(PtrCell cell, int x, int y)
     
     if ( cell != (PtrCell)NULL )
     {
-        outtextxy(HUDLINE + 50,y, "Row : " );
-        outtextxy(HUDLINE + 50,y, itoa(cell->Row,r, 10) );
+        outtextxy(VERTICAL_HUDLINE + 50,y, "Row : " );
+        outtextxy(VERTICAL_HUDLINE + 50,y, itoa(cell->Row,r, 10) );
         
-        outtextxy(HUDLINE + 50,y+20, "Col : " );
-        outtextxy(HUDLINE + 50,y+20, itoa(cell->Column,c,10) );
+        outtextxy(VERTICAL_HUDLINE + 50,y+20, "Col : " );
+        outtextxy(VERTICAL_HUDLINE + 50,y+20, itoa(cell->Column,c,10) );
     }
     else
     {
-        outtextxy(HUDLINE + 50, y, "Row : N");
-        outtextxy(HUDLINE + 50,y+20, "Col : N" );
+        outtextxy(VERTICAL_HUDLINE + 50, y, "Row : N");
+        outtextxy(VERTICAL_HUDLINE + 50,y+20, "Col : N" );
     }
 }
 
@@ -499,10 +499,10 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
  * 
  * @return -
  */
-int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], /*int *moveCount,*/ int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
+int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
 {   
     getmouseclick(WM_LBUTTONDOWN, *targetX, *targetY);
-
+    outtextxy(VERTICAL_HUDLINE + 50, 50, "                      ");
     
     int noPieces = 2;
         
@@ -537,7 +537,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], /*int *moveC
            {
                //user has selected an other piece, i.e. user wants to move this piece instead of the previously selected piece
                //we need to identify targets for this new piece
-               outtextxy(HUDLINE + 50, 90, "change subject");
+               outtextxy(VERTICAL_HUDLINE + 50, 90, "change subject");
 
                //redraw target cells in normal white color
                for (int i = 0; i < noPieces; i++)
@@ -549,7 +549,7 @@ int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], /*int *moveC
                return CHANGE_PIECE;
            }
            
-           outtextxy(HUDLINE + 50, 80-30, "Can't move");
+           outtextxy(VERTICAL_HUDLINE + 50, 50, "Piece cannot be moved");
            return FALSE;   
        }
     }

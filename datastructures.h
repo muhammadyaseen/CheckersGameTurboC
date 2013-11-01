@@ -14,7 +14,7 @@
 #define TARGET_CLICK_1 1  //return 1 if 1st target was clicked
 #define TARGET_CLICK_2 2  //return 2 if 2nd target was clicked
 #define NONE -404         //when a cell is not occupied by RED or BLUE
-#define HUDLINE (COL + 2) * WIDTH //Hudline will be created after col+2 and with the cell width
+#define VERTICAL_HUDLINE ((COL + 2) * WIDTH) //Hudline will be created after col+2 and with the cell width
 
 // For AI
 #define HIGH_PRIORITY 100
@@ -24,7 +24,7 @@
 enum PieceType { Red, Blue };
 enum PieceState { OnBoard, Removed };
 //enum GameState { Welcome, Playing, PlayerWin, CPUWin };
-enum GameState {Selection, TwoPlayer, VsComputer, Win};
+enum GameState {Selection, TwoPlayer, VsComputer, Win, Draw};
 
 typedef enum PieceType PieceType;
 typedef enum PieceState PieceState;

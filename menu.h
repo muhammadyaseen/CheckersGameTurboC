@@ -139,7 +139,7 @@ void DrawTeamScreen() {
     settextstyle (GOTHIC_FONT, IGNORE, 5);
     outtextxy (WIDTH_SCREEN*0.38, FROSTBITE_Y, "Frostbite");
 
-    delay (1500);
+    //delay (1500);
     //line
     setlinestyle (DOTTED_LINE, IGNORE, NORM_WIDTH);
     line (WIDTH_SCREEN*0.14, FROSTBITE_LINE_Y, WIDTH_SCREEN*0.83, FROSTBITE_LINE_Y);
@@ -148,7 +148,8 @@ void DrawTeamScreen() {
 }
 
 void WriteNames() {
-    delay (1500);
+    
+    //delay (1500);
     
     //names
     settextstyle (SIMPLEX_FONT, IGNORE, 2);
@@ -158,7 +159,7 @@ void WriteNames() {
     outtextxy (NAME_X + 60,  NAME_Y + (2 * NAME_HEIGHT),  "Asjad Sohail (CS-008)" );
     outtextxy (NAME_X + 25,  NAME_Y + (3 * NAME_HEIGHT),  "Wajiha Muzaffar Ali (CS-013)" );
 
-    delay (1000);
+    delay (1500);
 
     //press any key message 
     settextstyle (DEFAULT_FONT, IGNORE, 2);
@@ -180,10 +181,11 @@ void DrawOptions() {
     settextstyle (BOLD_FONT, IGNORE, 6);
     
     outtextxy ((RECT_LEFT + ((RECT_WIDTH - 245) / 2)), (PLAYER2_RECT_TOP + ((RECT_LENGTH - 50) / 2)), "2 Player");
-    delay (1000);
+    //delay (1000);
     outtextxy ((RECT_LEFT + ((RECT_WIDTH - 340) / 2)), (VSCOMP_RECT_TOP + ((RECT_LENGTH - 50) / 2)), "Vs Computer");
-    delay (1000);
+    //delay (1000);
     outtextxy ( (RECT_LEFT + ((RECT_WIDTH - 120) / 2)), (EXIT_RECT_TOP + ((RECT_LENGTH - 50) / 2)), "Quit");
+    
     delay (1000);
 
     //option boxes

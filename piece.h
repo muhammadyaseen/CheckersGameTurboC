@@ -111,8 +111,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
 
 void DrawIndicator(PtrBoard board)
 {
-    char * numberRed = (char *)malloc( 3 );
-    char * numberBlue = (char *)malloc( 3 );
+    char * buffer = (char *)malloc( 3 );
     
     int bluePieces = 0, redPieces = 0;
     
@@ -129,25 +128,30 @@ void DrawIndicator(PtrBoard board)
      
     int x = 650, y = 500;
     
-    outtextxy(HUDLINE + 70,y-50,"Number of pieces left");
+    outtextxy(VERTICAL_HUDLINE + 70, y - 50, "Number of pieces left");
     
-    //red circle
+    // red circle
     setcolor(RED);
-    circle(HUDLINE + 130, y+60, 25);
+    circle(VERTICAL_HUDLINE + 130, y + 60, 25);
     setfillstyle(SOLID_FILL, RED); //fills the color red in it
-    floodfill(HUDLINE + 130, y+60, RED);
-    outtextxy( HUDLINE +115, y+100, itoa(redPieces, numberRed, 10) );
+    floodfill(VERTICAL_HUDLINE + 130, y + 60, RED);
     
-    //blue circle
+    // red pieces
+    if (redPieces < 10) outtextxy( VERTICAL_HUDLINE + 124, y + 100, itoa(redPieces, buffer, 10) );
+    else outtextxy( VERTICAL_HUDLINE + 117, y + 100, itoa(redPieces, buffer, 10) );
+    
+    // blue circle
     setcolor(BLUE);
-    circle(HUDLINE + 270, y+60, 25);
+    circle(VERTICAL_HUDLINE + 270, y + 60, 25);
     setfillstyle(SOLID_FILL, BLUE); //fills the color blue in it
-    floodfill(HUDLINE + 270, y+60, BLUE);
-    outtextxy( HUDLINE + 255, y+100, itoa(bluePieces, numberBlue, 10) );
+    floodfill(VERTICAL_HUDLINE + 271, y + 60, BLUE);
+    
+    // blue pieces
+    if (bluePieces < 10) outtextxy(VERTICAL_HUDLINE + 264, y + 100, itoa(bluePieces, buffer, 10) );
+    else outtextxy(VERTICAL_HUDLINE + 257, y + 100, itoa(bluePieces, buffer, 10) );
     
     setcolor(CYAN);
-    free(numberRed);
-    free(numberBlue);
+    
 }
 
 /* @description - 
@@ -471,6 +475,7 @@ int NoOfPieces(int * redPieces, int * bluePieces, PtrBoard board)
             (*redPieces)++;
     }
 }
+
 int PiecesLeft(PtrBoard board)
 {
     int bluePieces = 0, redPieces = 0;
@@ -478,6 +483,93 @@ int PiecesLeft(PtrBoard board)
     NoOfPieces(&redPieces, &bluePieces, board);
     
     return bluePieces && redPieces;
+}
+
+int PlayerMoveNotPossible(int turn, PtrBoard board)
+{
+    Piece playerPieces[ PIECES_COUNT/2 ];
+    
+    // Holds the number of pieces for use in for loops
+    int numberOfPlayerPieces = 0; 
+    
+    // Goes through all the pieces on the board
+    for (int i = 0; i < (PIECES_COUNT); i++)
+    {   
+        // Checks to see whom the piece belongs to and whether it is on the
+        // the board, that is not removed or "jumped over".  
+        if (board->Pieces[i].State == OnBoard)
+        {
+            if (board->Pieces[i].Type == turn)
+                playerPieces[ numberOfPlayerPieces++ ] = board->Pieces[i];
+        }
+    
+    } // End of pieces gathering for-loop
+    
+    int numberOfPossibleMoves = 0;
+    
+    // A buffer to temporarily store the moves so they can be evaluated.
+    PtrMove buffer[4];
+    
+    for(int i = 0; i < 4; i++)
+        buffer[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
+    
+    for (int i = 0; i < numberOfPlayerPieces; i++)
+    {
+        // Enters when the function does return targets
+        if (IdentifyAndHighlightTargets(playerPieces[i].Cell, buffer, turn, board, TRUE))
+        {
+            // If a target exists, it stores all the data in the PossibleMoves 
+            // array
+            for (int j = 0; j < 4; j++)
+            {
+                if ( (*buffer[j]).TargetCell != NULL )
+                {
+                    numberOfPossibleMoves++;
+                }
+            }    
+        }
+        
+    } // End of PossibleMoves calculating for-loop
+    
+    if (numberOfPossibleMoves == 0) return TRUE;
+    else return FALSE;
+    
+}
+
+int PiecesLeftForPlayer(int turn, PtrBoard board)
+{
+    int bluePieces = 0, redPieces = 0;
+    
+    NoOfPieces(&redPieces, &bluePieces, board);
+    
+    if (turn == RED) return redPieces; 
+    else return bluePieces;
+}
+
+int GameOver(int *winner,int turn, PtrBoard board)
+{
+    if(PlayerMoveNotPossible(turn, board))
+    {
+        if(PiecesLeftForPlayer(turn, board) != 0)
+        {
+            
+            // If there are pieces left, then that means no pieces can move so
+            // we draw the game
+            gameState = Draw;
+            *winner = NULL;
+            return TRUE;
+        }
+        else
+        {
+            // there is a winner so we set things accordingly
+            gameState = Win;
+            *winner = (turn == BLUE) ? RED : BLUE;
+            return TRUE;
+        }
+    }
+    
+    // the game is not over yet
+    return FALSE;
 }
 
 #endif	/* PIECE_H */
