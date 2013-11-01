@@ -129,12 +129,23 @@ void DrawIndicator(PtrBoard board)
      
     int x = 650, y = 500;
     
-    outtextxy( x, y, "RED : ");
-    outtextxy( x, y+30, itoa(redPieces, numberRed, 10) );
+    outtextxy(HUDLINE + 70,y-50,"Number of pieces left");
     
-    outtextxy( x, y+60, "BLUE : ");
-    outtextxy( x, y+90, itoa(bluePieces, numberBlue, 10) );
+    //red circle
+    setcolor(RED);
+    circle(HUDLINE + 130, y+60, 25);
+    setfillstyle(SOLID_FILL, RED); //fills the color red in it
+    floodfill(HUDLINE + 130, y+60, RED);
+    outtextxy( HUDLINE +115, y+100, itoa(redPieces, numberRed, 10) );
     
+    //blue circle
+    setcolor(BLUE);
+    circle(HUDLINE + 270, y+60, 25);
+    setfillstyle(SOLID_FILL, BLUE); //fills the color blue in it
+    floodfill(HUDLINE + 270, y+60, BLUE);
+    outtextxy( HUDLINE + 255, y+100, itoa(bluePieces, numberBlue, 10) );
+    
+    setcolor(CYAN);
     free(numberRed);
     free(numberBlue);
 }

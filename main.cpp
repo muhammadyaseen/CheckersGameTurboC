@@ -13,7 +13,7 @@ Board CheckersBoard;
 
 int main(void)
 {  
-   initwindow(1000, 900);
+   initwindow(1200, 900);
    
     int turn;
     int selectionChanged;
@@ -44,10 +44,14 @@ int main(void)
                     
                //Draws the initial state of board
                DrawBoard( &CheckersBoard );
-     
+               
+               line (HUDLINE,0,HUDLINE,getmaxy()); //Draws the hud line
+               /*
+                Will move the files over the hud line with HUDLINE and any further pixels
+               */     
                settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
    
-               outtextxy(700, 90,"No Piece Selected");
+               outtextxy(HUDLINE + 50, 90,"No Piece Selected");
    
                turn = RED;
    
@@ -68,8 +72,8 @@ int main(void)
                     DrawIndicator(&CheckersBoard);
        
                     //turn indicator
-                    strcmp(turnColor, "BLUE") ? outtextxy(600, 110, "RED's turn") : outtextxy(600, 110,"BLUE's turn");
-       
+                    strcmp(turnColor, "BLUE") ? outtextxy(HUDLINE + 50, 160, "RED's turn  ") : outtextxy(HUDLINE + 50, 160,"BLUE's turn");
+                    //the space removes the extra 'n' after blue turn
                     //check if correct piece is selected
                     if ( !selectionChanged )
                     {
@@ -83,12 +87,12 @@ int main(void)
                          //this check tests that scenario
                          if ( getpixel(mouseX, mouseY) != turn )
                          {
-                              outtextxy(600, 90,"Select correct piece");
+                              outtextxy(HUDLINE + 50, 90,"Select correct piece");
                
                               if ( turn == RED )
-                                   outtextxy(600, 110,"Select RED colored piece");
+                                   outtextxy(HUDLINE + 50, 110,"Select RED colored piece");
                               else 
-                                   outtextxy(600, 110,"Select BLUE colored piece");    
+                                   outtextxy(HUDLINE + 50, 110,"Select BLUE colored piece");    
                          }
                     
                          else
