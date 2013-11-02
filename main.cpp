@@ -200,10 +200,12 @@ int main(void)
                switch (winner)
                {
                    case RED:
+                        settextstyle(DEFAULT_FONT, HORIZ_DIR, 4);
                         outtextxy(VERTICAL_HUDLINE + 50, 160, "RED WINS     ");
                         break;
                    
                    case BLUE:
+                       settextstyle(DEFAULT_FONT, HORIZ_DIR, 4);
                        outtextxy(VERTICAL_HUDLINE + 50, 160, "BLUE WINS     ");
                        break;
                        

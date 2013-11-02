@@ -9,7 +9,7 @@ int NoOfPieces(int *, int *, PtrBoard);
 /* 
  * @description : Used to draw the piece, This can be called anywhere you need to draw a piece.
  * 
- * @param - board - sAddress of the global struct Board variable. We use it to 'fill' in the array entries, as we build the piece
+ * @param - board - Address of the global struct Board variable. We use it to 'fill' in the array entries, as we build the piece
  * @param - cell - Address of the cell to which this piece belongs
  * @param - pieceNo - Index of this piece in the Pieces array in Board struct
  * @param - Color used to draw this piece
@@ -36,13 +36,7 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
 
     //store a reference to this piece in cell
     cell->Piece = &board->Pieces[pieceNo];
-    
-    //test code
-//    if (cell->Row == 2 && cell->Column == 3) cell->Piece->IsKing = TRUE;
-//    
-//    if (cell->Row == 5 && cell->Column == 4) cell->Piece->IsKing = TRUE;
-    //end test code
-    
+       
     //set draw color of circle / piece
     setcolor(color);
 
@@ -56,8 +50,6 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
     setfillstyle(SOLID_FILL, color);
 
     floodfill( circleX, circleY, color );
-    
-    //delay(150);
     
     //if the cell contains a kinged piece
     
@@ -74,33 +66,6 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
     setcolor(BORDER_COLOR);
 }
 
-/* @description - 
- * 
- * @param - 
- * @param - 
- * @param - 
- * 
- * @return -
- */
-//void MovePieceForAI(PtrBoard board, PtrCell selectedCell , PtrCell target, int turn)
-//{
-//    //change previous cell data               
-//    selectedCell->IsOccupied = FALSE;
-//
-//    //change target cell data
-//    target->Piece = selectedCell->Piece;
-//    target->IsOccupied = TRUE;
-//
-//    selectedCell->Piece = NULL;
-//
-//    //re draw previous cell
-//    DrawCell( selectedCell, selectedCell->Row, selectedCell->Column );
-//
-//    //draw piece on target cell
-//    DrawPiece( board, target, target->Piece->Index, turn );
-//    
-//}
-
 /* @description - Used to draw the (sort of) score board, indicating how many pieces are 'OnBoard' of a particular type
  * @param - 
  * @param - 
@@ -114,15 +79,6 @@ void DrawIndicator(PtrBoard board)
     char * buffer = (char *)malloc( 3 );
     
     int bluePieces = 0, redPieces = 0;
-    
-//    for ( int i = 0; i < PIECES_COUNT; i++)
-//    {
-//        if ( board->Pieces[i].Type == BLUE && board->Pieces[i].State == OnBoard )
-//            bluePieces++;
-//        
-//        if ( board->Pieces[i].Type == RED && board->Pieces[i].State == OnBoard )
-//            redPieces++;
-//    }
     
     NoOfPieces(&redPieces, &bluePieces, board);
      
@@ -184,8 +140,6 @@ void MovePiece(PtrMove move, int turn, PtrBoard board, int forAI = FALSE)
 
     if ( move->TargetCell != NULL) DrawCell( move->TargetCell, move->TargetCell->Row, move->TargetCell->Column );
 
-//    if ( move->OtherTargetCell != NULL && move->OtherTargetCell->IsOccupied == FALSE) 
-//        DrawCell( move->OtherTargetCell, move->OtherTargetCell->Row, move->OtherTargetCell->Column );
     if (!forAI)
     {
         for(int t = 0; t < 3; t++)
