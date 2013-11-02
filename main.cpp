@@ -90,7 +90,7 @@ int main(void)
                     {
                          //for ex, it this is blue's turn but user clicks on a red piece
                          //this check tests that scenario
-                         if ( GetClickedCell(mouseX, mouseY, &CheckersBoard)->OccupiedBy != turn)
+                         if ( getpixel(mouseX, mouseY) != turn )
                          {
                               outtextxy(VERTICAL_HUDLINE + 50, 90, "Select correct piece");
                

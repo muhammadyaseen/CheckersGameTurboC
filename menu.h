@@ -54,7 +54,7 @@ GameState gameState;
 int AI_Mode= FALSE;
 
 //global variables
-int mouseX, mouseY;  //for mouse
+int mouseX = -1, mouseY = -1;  //for mouse
 int load_x1=0, load_x2=20;
 
 void Main_Window();
