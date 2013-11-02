@@ -46,6 +46,10 @@ int main(void)
                //Draws the initial state of board
                DrawBoard( &CheckersBoard );
                
+               settextstyle (SIMPLEX_FONT, IGNORE, 2);
+               rectangle( MENU_BUTTON_LEFT, MENU_BUTTON_TOP, MENU_BUTTON_RIGHT, MENU_BUTTON_BOTTOM);
+               outtextxy( MENU_BUTTON_LEFT + 5,MENU_BUTTON_TOP + 5,"MENU");
+               
                line (VERTICAL_HUDLINE, 0,VERTICAL_HUDLINE,getmaxy()); //Draws the hud line
    
                settextstyle(DEFAULT_FONT, HORIZ_DIR, 2);
@@ -84,6 +88,15 @@ int main(void)
                     {
                          //selectionChanged = FALSE;
                          getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
+                         
+                         {
+                             if(mouseX>MENU_BUTTON_LEFT && mouseX<MENU_BUTTON_RIGHT && mouseY>MENU_BUTTON_TOP && mouseY<MENU_BUTTON_BOTTOM)
+                             {
+                                 gameState= Selection;
+                                 cleardevice();
+                                 break;
+                             }
+                         }
                     }
                     // if the button was clicked, then we check if the correct piece was selected
                     if ( !( mouseX == -1 && mouseY == -1 ) )

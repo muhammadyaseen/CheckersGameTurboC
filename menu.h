@@ -49,6 +49,13 @@
 #define RECT_WIDTH (RECT_RIGHT - RECT_LEFT)
 #define RECT_LENGTH (PLAYER2_RECT_BOTTOM - PLAYER2_RECT_TOP)
 
+//for menu button on board
+#define MENU_BUTTON_LEFT (WIDTH_SCREEN * 0.795)
+#define MENU_BUTTON_RIGHT (MENU_BUTTON_LEFT + 97)
+
+#define MENU_BUTTON_TOP (HEIGHT_SCREEN * 0.717)
+#define MENU_BUTTON_BOTTOM (MENU_BUTTON_TOP + 30)
+
 GameState gameState;
 
 int AI_Mode= FALSE;
@@ -57,6 +64,7 @@ int AI_Mode= FALSE;
 int mouseX = -1, mouseY = -1;  //for mouse
 int load_x1=0, load_x2=20;
 
+//prototypes
 void Main_Window();
 void Selection_Window();
 void DrawMainScreen();
@@ -68,6 +76,7 @@ void DrawMenu();
 void DrawOptions();
 void InterceptClicks();
 
+//function definitions
 void Main_Window() {
     DrawMainScreen();
     DrawTeamScreen();    
@@ -78,7 +87,6 @@ void Selection_Window() {
     InterceptClicks();
     
 }
-
 
 void DrawMainScreen() {
     Image_Lines();
