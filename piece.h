@@ -3,7 +3,8 @@
 
 #include "datastructures.h"
 
-//void DrawPiece(PtrBoard, PtrCell, int, int);
+void DrawPiece(PtrBoard, PtrCell, int, int, int);
+int NoOfPieces(int *, int *, PtrBoard);
 
 /* 
  * @description : Used to draw the piece, This can be called anywhere you need to draw a piece.
@@ -30,12 +31,12 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
     board->Pieces[pieceNo].IsKing = isKing; //we also set this param in MovePiece function
     board->Pieces[pieceNo].State = OnBoard;
     board->Pieces[pieceNo].Type = type;
-    
+        
     board->Pieces[pieceNo].Index = pieceNo;
 
     //store a reference to this piece in cell
     cell->Piece = &board->Pieces[pieceNo];
-    
+       
     //set draw color of circle / piece
     setcolor(color);
 
@@ -49,8 +50,6 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
     setfillstyle(SOLID_FILL, color);
 
     floodfill( circleX, circleY, color );
-    
-    delay(150);
     
     //if the cell contains a kinged piece
     
@@ -67,167 +66,464 @@ void DrawPiece(PtrBoard board, PtrCell cell, int pieceNo, int color, int isKing 
     setcolor(BORDER_COLOR);
 }
 
-/* @description - Moves the piece from its current location to a new location during a move
+/* @description - Used to draw the (sort of) score board, indicating how many pieces are 'OnBoard' of a particular type
+ * @param - 
+ * @param - 
+ * @param - 
  * 
- * @paramm - board - pointer to board state
- * @param - clickedCell - pointer to the cell user selected with mouse click
- * @param - target1 - represents one of the possible target cells user might selection as destination of the move
- * @param - target2 - represents one of the possible target cells user might selection as destination of the move
- * @paraam - clickedTarget - represents the cell user has selected as target / destination
- * @param - turn - color of piece whose turn it is
+ * @return -
  */
-void MovePiece(PtrBoard board, PtrCell clickedCell , PtrCell clickedTarget, PtrCell target1, PtrCell target2, int turn)
+
+void DrawIndicator(PtrBoard board)
+{
+    char * buffer = (char *)malloc( 3 );
+    
+    int bluePieces = 0, redPieces = 0;
+    
+    NoOfPieces(&redPieces, &bluePieces, board);
+     
+    int x = 650, y = 500;
+    
+    outtextxy(VERTICAL_HUDLINE + 70, y - 50, "Number of pieces left");
+    
+    // red circle
+    setcolor(RED);
+    circle(VERTICAL_HUDLINE + 130, y + 60, 25);
+    setfillstyle(SOLID_FILL, RED); //fills the color red in it
+    floodfill(VERTICAL_HUDLINE + 130, y + 60, RED);
+    
+    // red pieces
+    if (redPieces < 10) outtextxy( VERTICAL_HUDLINE + 124, y + 100, itoa(redPieces, buffer, 10) );
+    else outtextxy( VERTICAL_HUDLINE + 117, y + 100, itoa(redPieces, buffer, 10) );
+    
+    // blue circle
+    setcolor(BLUE);
+    circle(VERTICAL_HUDLINE + 270, y + 60, 25);
+    setfillstyle(SOLID_FILL, BLUE); //fills the color blue in it
+    floodfill(VERTICAL_HUDLINE + 271, y + 60, BLUE);
+    
+    // blue pieces
+    if (bluePieces < 10) outtextxy(VERTICAL_HUDLINE + 264, y + 100, itoa(bluePieces, buffer, 10) );
+    else outtextxy(VERTICAL_HUDLINE + 257, y + 100, itoa(bluePieces, buffer, 10) );
+    
+    setcolor(CYAN);
+    
+}
+
+/* @description - 
+ * 
+ * @param - 
+ * @param - 
+ * @param - 
+ * 
+ * @return -
+ */
+void MovePiece(PtrMove move, int turn, PtrBoard board, int forAI = FALSE)
 {
     //change previous cell data
-               
-    clickedCell->IsOccupied = FALSE;
+    move->CurrentCell->IsOccupied = FALSE;
 
     //change target cell data
 
-    clickedTarget->Piece = clickedCell->Piece;
-    clickedTarget->IsOccupied = TRUE;
-    clickedTarget->OccupiedBy = turn;
+    move->TargetCell->Piece = move->CurrentCell->Piece;
+    move->TargetCell->IsOccupied = TRUE;
+    move->TargetCell->OccupiedBy = turn;
 
-    clickedCell->Piece = NULL;
-    clickedCell->OccupiedBy = NONE;
+    move->CurrentCell->Piece = NULL;
+    move->CurrentCell->OccupiedBy = NONE;
 
     //re draw prev cell
 
-    DrawCell( clickedCell, clickedCell->Row, clickedCell->Column );
+    DrawCell( move->CurrentCell, move->CurrentCell->Row, move->CurrentCell->Column );
 
     //redraw target cells in normal white color
 
-    if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
-    if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
+    if ( move->TargetCell != NULL) DrawCell( move->TargetCell, move->TargetCell->Row, move->TargetCell->Column );
+
+    if (!forAI)
+    {
+        for(int t = 0; t < 3; t++)
+        {
+            if ( move->OtherTargetCells[t] != NULL )
+                DrawCell( move->OtherTargetCells[t], move->OtherTargetCells[t]->Row, move->OtherTargetCells[t]->Column );
+        }
+    }
     
     int isKing = FALSE;
     
     //determine if the piece is kinged or not, piece is kinged if it reaches the opposite end of the board
     
-    if ( turn == RED && clickedTarget->Row == 7 ) { clickedTarget->Piece->IsKing = TRUE; isKing = TRUE; }
-    if ( turn == BLUE && clickedTarget->Row == 0 ) { clickedTarget->Piece->IsKing = TRUE; isKing = TRUE; }
+    if ( turn == RED && move->TargetCell->Row == ROW - 1 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
+    if ( turn == BLUE && move->TargetCell->Row == 0 ) { move->TargetCell->Piece->IsKing = TRUE; isKing = TRUE; }
 
     //draw piece on target /destination cell
-
-    DrawPiece( board, clickedTarget, clickedTarget->Piece->Index, turn, isKing );
+    DrawPiece( board, move->TargetCell, move->TargetCell->Piece->Index, turn, move->TargetCell->Piece->IsKing );
+    
+    // If the move is a jump, then the JumpedCell needs to be updated as well
+    if (move->isJump)
+    {
+       DrawCell(move->JumpedCell, move->JumpedCell->Row, move->JumpedCell->Column);
+       move->JumpedCell->Piece->State = Removed;
+       move->JumpedCell->Piece = NULL;
+       move->JumpedCell->IsOccupied = FALSE;
+       move->JumpedCell->OccupiedBy = NONE;
+    }
     
 }
 
-void MovePieceForAI(PtrBoard board, PtrCell selectedCell , PtrCell target, int turn)
-{
-    //change previous cell data               
-    selectedCell->IsOccupied = FALSE;
-
-    //change target cell data
-    target->Piece = selectedCell->Piece;
-    target->IsOccupied = TRUE;
-
-    selectedCell->Piece = NULL;
-
-    //re draw previous cell
-    DrawCell( selectedCell, selectedCell->Row, selectedCell->Column );
-
-    //redraw target cells in normal white color
-
-//    if ( target1 != NULL) DrawCell( target1, target1->Row, target1->Column );
-//    if ( target2 != NULL) DrawCell( target2, target2->Row, target2->Column );
-
-    //draw piece on target cell
-    DrawPiece( board, target, target->Piece->Index, turn );
-    
-}
-
-void PlayAITurn(PtrBoard board, int turn)
+/* @description - 
+ * 
+ * @param - 
+ * @param - 
+ * @param - 
+ * 
+ * @return -
+ */
+void PlayAITurn(PtrBoard board, int AIColor)
 {         
-    // Array to hold all the pieces the AI can control
-    Piece redPieceCells[ PIECES_COUNT/2 ];
+    // Get the Opponent's Color to predict their moves
+    int opponentColor = (AIColor == RED) ? BLUE : RED;
     
-    int numberOfPieces = 0; // Holds the number of pieces for use in for loops
+//    PieceType AIPiece = (turn == BLUE) ? Blue : Red;
+//    PieceType opponentPiece = (turn == BLUE) ? Red : Blue;
+    
+    // Array to hold all the pieces the AI or user can control
+    Piece AIPieces[ PIECES_COUNT/2 ];
+    Piece opponentPieces[ PIECES_COUNT/2 ];
+    
+    // Holds the number of pieces for use in for loops
+    int numberOfAIPieces = 0; 
+    int numberOfOpponentPieces = 0;
     
     // Goes through all the pieces on the board
-    for (int i = 0; i < (ROW * COL); i++)
+    for (int i = 0; i < (PIECES_COUNT); i++)
     {   
-        // Checks to see if the piece color is indeed blue and on the
-        // the board, that is not removed or "jumped over".
-        if (board->Pieces[i].Type == Blue &&   
-            board->Pieces[i].State == OnBoard)
+        // Checks to see whom the piece belongs to and whether it is on the
+        // the board, that is not removed or "jumped over".  
+        if (board->Pieces[i].State == OnBoard)
         {
-            redPieceCells[ numberOfPieces++ ] =  board->Pieces[i];
+            if (board->Pieces[i].Type == AIColor)
+                AIPieces[ numberOfAIPieces++ ] = board->Pieces[i];
+            
+            if (board->Pieces[i].Type == opponentColor)
+                opponentPieces[ numberOfOpponentPieces++ ] = board->Pieces[i];
         }
     
-    } // End of RedPieces gathering for-loop
+    } // End of pieces gathering for-loop
     
-    Moves possibleMoves[numberOfPieces * 2];
-    int numberOfMoves = 0;
+    //========================================================================//
     
-    PtrCell target1, target2;
+    Move possibleMoves[numberOfAIPieces * 4];
+    int numberOfPossibleMoves = 0;
     
-    for (int i = 0; i < numberOfPieces; i++)
+    // A buffer to temporarily store the moves so they can be evaluated.
+    PtrMove buffer[4];
+    
+    for(int i = 0; i < 4; i++)
+        buffer[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
+    
+    for (int i = 0; i < numberOfAIPieces; i++)
     {
         // Enters when the function does return targets
-        if (IdentifyTargets(turn, redPieceCells[i].Cell, &target1, &target2, board))
+        if (IdentifyAndHighlightTargets(AIPieces[i].Cell, buffer, AIColor, board, TRUE))
         {
             // If a target exists, it stores all the data in the PossibleMoves 
             // array
-            if ( !(target1 == NULL) )
+            for (int j = 0; j < 4; j++)
             {
-                possibleMoves[numberOfMoves].Piece = &redPieceCells[i];
-                possibleMoves[numberOfMoves].CurrentCell = redPieceCells[i].Cell;
-                possibleMoves[numberOfMoves].TargetCell = target1;
-                
-                numberOfMoves++;
-            }
-            
-            if ( !(target2 == NULL) )
-            {
-                possibleMoves[numberOfMoves].Piece = &redPieceCells[i];
-                possibleMoves[numberOfMoves].CurrentCell = redPieceCells[i].Cell;
-                possibleMoves[numberOfMoves].TargetCell = target2;
-                
-                numberOfMoves++;
-            }
+                if ( (*buffer[j]).TargetCell != NULL )
+                {
+                    possibleMoves[numberOfPossibleMoves] = *buffer[j];
+                    possibleMoves[numberOfPossibleMoves].movePriority = 0;
+                    
+                    numberOfPossibleMoves++;
+                }
+            }    
         }
         
     } // End of PossibleMoves calculating for-loop
     
-    // Randomly select a move
-    int moveIndex = rand() % numberOfMoves;
+    //========================================================================//
     
-    // Moves the piece
-    MovePieceForAI(board, possibleMoves[moveIndex].CurrentCell,
-                   possibleMoves[moveIndex].TargetCell, turn);
+    Move opponentMoves[numberOfOpponentPieces * 4];
+    int numberOfOpponentMoves = 0;
+    
+    // Resetting the buffer
+    for(int i = 0; i < 4; i++)
+        buffer[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
+    
+    for (int i = 0; i < numberOfOpponentPieces; i++)
+    {
+        // Enters when the function does return targets
+        if (IdentifyAndHighlightTargets(opponentPieces[i].Cell, buffer, opponentColor, board, TRUE))
+        {
+            // If a target exists, it stores all the data in the PossibleMoves array
+            for (int j = 0; j < 4; j++)
+            {
+                if ( (*buffer[j]).TargetCell != NULL )
+                {
+                    opponentMoves[numberOfOpponentMoves++] = *buffer[j];                    
+                }
+            }    
+        }
+        
+    } // End of OpponentMoves calculating for-loop
+    
+    //========================================================================//
+    
+    Move goodMoves[numberOfPossibleMoves];
+    int numberOfGoodMoves = 0;
+    
+    // Opponent based moves
+    for(int i = 0; i < numberOfOpponentMoves; i++)
+    {
+        if (opponentMoves[i].isJump)
+        {
+            for(int j = 0; j < numberOfPossibleMoves; j++)
+            {
+                if (possibleMoves[j].TargetCell == opponentMoves[i].TargetCell &&
+                    opponentMoves[i].TargetCell->IsOccupied == FALSE)
+                {
+                    goodMoves[numberOfGoodMoves] =  possibleMoves[j];
+                    goodMoves[numberOfGoodMoves].movePriority = HIGH_PRIORITY;
+                    
+                    numberOfGoodMoves++;
+                }
+            }
+        }
+    }
+    
+    // A bool for whether the move is safe or not
+    int safe = TRUE;
+    
+    // Jump moves
+    for(int i = 0; i < numberOfPossibleMoves; i++)
+    {
+        if (possibleMoves[i].isJump)
+        {
+            safe = TRUE;
+            
+            for(int j = 0; j < numberOfOpponentMoves; j++)
+            {
+                if ( (possibleMoves[i].TargetCell == opponentMoves[j].TargetCell  && // Tests to see if the target cell can be jumped over by an opponent's piece
+                      possibleMoves[i].JumpedCell != opponentMoves[j].CurrentCell) &&// and whether that cell is the jumped piece's target cell or not
+                    
+                        !(possibleMoves[i].TargetCell->Column == 7 ||                    // All of this checks whether the move finishes on the edge of the board
+                          possibleMoves[i].TargetCell->Column == 0 ||                    // since those are safe spots and should not make the safe bool false
+                          possibleMoves[i].TargetCell->Row == 7    ||
+                          possibleMoves[i].TargetCell->Row == 0       )               )
+                {
+                    safe = FALSE;
+                    break;
+                }
+            }
+            
+            if (safe)
+            {
+                goodMoves[numberOfGoodMoves] =  possibleMoves[i];
+                goodMoves[numberOfGoodMoves].movePriority = MODERATE_PRIORITY;
+
+                numberOfGoodMoves++;
+            }
+        }
+    }
+    
+    // Position based moves
+    for (int i = 0; i < numberOfPossibleMoves; i++)
+    {
+        if (possibleMoves[i].TargetCell->Column == 7 ||
+            possibleMoves[i].TargetCell->Column == 0 ||
+            possibleMoves[i].TargetCell->Row == 7 ||
+            possibleMoves[i].TargetCell->Row == 0)
+        {
+            goodMoves[numberOfGoodMoves] =  possibleMoves[i];
+            goodMoves[numberOfGoodMoves].movePriority = LOW_PRIORITY;
+            
+            numberOfGoodMoves++;
+        }
+        
+    }
+    
+    //========================================================================//
+    
+    Move highPriorityMoves[numberOfGoodMoves];
+    Move moderatePriorityMoves[numberOfGoodMoves];
+    Move lowPriorityMoves[numberOfGoodMoves];
+    
+    int numberOfHighPriorityMoves = 0;
+    int numberOfModeratePriorityMoves = 0;
+    int numberOfLowPriorityMoves = 0;
+    
+    for(int i = 0; i < numberOfGoodMoves; i++)
+    {
+        if(goodMoves[i].movePriority == HIGH_PRIORITY)
+            highPriorityMoves[numberOfHighPriorityMoves++] = goodMoves[i];
+        
+        if(goodMoves[i].movePriority == MODERATE_PRIORITY)
+            moderatePriorityMoves[numberOfModeratePriorityMoves++] = goodMoves[i];
+        
+        if(goodMoves[i].movePriority == LOW_PRIORITY)
+            lowPriorityMoves[numberOfLowPriorityMoves++] = goodMoves[i];
+        
+    }
+    
+    //========================================================================//
+    
+    // Delay
+    delay(1500);
+    
+    int moveIndex; 
+    
+    if(numberOfHighPriorityMoves != 0)
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfHighPriorityMoves;
+
+        // Moves the piece
+        MovePiece(&highPriorityMoves[moveIndex], AIColor, board, TRUE);
+    }
+    else if(numberOfModeratePriorityMoves != 0)
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfModeratePriorityMoves;
+
+        // Moves the piece
+        MovePiece(&moderatePriorityMoves[moveIndex], AIColor, board, TRUE);
+    }
+    else if(numberOfLowPriorityMoves != 0)
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfLowPriorityMoves;
+
+        // Moves the piece
+        MovePiece(&lowPriorityMoves[moveIndex], AIColor, board, TRUE);
+    }
+    else if(numberOfGoodMoves != 0)
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfGoodMoves;
+
+        // Moves the piece
+        MovePiece(&goodMoves[moveIndex], AIColor, board, TRUE);
+
+    }
+    else
+    {
+        // Randomly select a move
+        moveIndex = rand() % numberOfPossibleMoves;
+
+        // Moves the piece
+        MovePiece(&possibleMoves[moveIndex], AIColor, board, TRUE);
+        
+    }
 }
 
-/*  @description - Used to draw the (sort of) score board, indicating how many pieces are 'OnBoard' of a particular type
- *
- */
-
-void DrawIndicator(PtrBoard board)
+int NoOfPieces(int * redPieces, int * bluePieces, PtrBoard board)
 {
-    char * numberRed = (char *)malloc( 3 );
-    char * numberBlue = (char *)malloc( 3 );
-    
-    int bluePieces = 0, redPieces = 0;
-    
     for ( int i = 0; i < PIECES_COUNT; i++)
     {
         if ( board->Pieces[i].Type == BLUE && board->Pieces[i].State == OnBoard )
-            bluePieces++;
+            (*bluePieces)++;
         
         if ( board->Pieces[i].Type == RED && board->Pieces[i].State == OnBoard )
-            redPieces++;
+            (*redPieces)++;
+    }
+}
+
+int PiecesLeft(PtrBoard board)
+{
+    int bluePieces = 0, redPieces = 0;
+    
+    NoOfPieces(&redPieces, &bluePieces, board);
+    
+    return bluePieces && redPieces;
+}
+
+int PlayerMoveNotPossible(int turn, PtrBoard board)
+{
+    Piece playerPieces[ PIECES_COUNT/2 ];
+    
+    // Holds the number of pieces for use in for loops
+    int numberOfPlayerPieces = 0; 
+    
+    // Goes through all the pieces on the board
+    for (int i = 0; i < (PIECES_COUNT); i++)
+    {   
+        // Checks to see whom the piece belongs to and whether it is on the
+        // the board, that is not removed or "jumped over".  
+        if (board->Pieces[i].State == OnBoard)
+        {
+            if (board->Pieces[i].Type == turn)
+                playerPieces[ numberOfPlayerPieces++ ] = board->Pieces[i];
+        }
+    
+    } // End of pieces gathering for-loop
+    
+    int numberOfPossibleMoves = 0;
+    
+    // A buffer to temporarily store the moves so they can be evaluated.
+    PtrMove buffer[4];
+    
+    for(int i = 0; i < 4; i++)
+        buffer[i] = (PtrMove) calloc( 1, sizeof(Move) ); //initializes address to NULL values
+    
+    for (int i = 0; i < numberOfPlayerPieces; i++)
+    {
+        // Enters when the function does return targets
+        if (IdentifyAndHighlightTargets(playerPieces[i].Cell, buffer, turn, board, TRUE))
+        {
+            // If a target exists, it stores all the data in the PossibleMoves 
+            // array
+            for (int j = 0; j < 4; j++)
+            {
+                if ( (*buffer[j]).TargetCell != NULL )
+                {
+                    numberOfPossibleMoves++;
+                }
+            }    
+        }
+        
+    } // End of PossibleMoves calculating for-loop
+    
+    if (numberOfPossibleMoves == 0) return TRUE;
+    else return FALSE;
+    
+}
+
+int PiecesLeftForPlayer(int turn, PtrBoard board)
+{
+    int bluePieces = 0, redPieces = 0;
+    
+    NoOfPieces(&redPieces, &bluePieces, board);
+    
+    if (turn == RED) return redPieces; 
+    else return bluePieces;
+}
+
+int GameOver(int *winner,int turn, PtrBoard board)
+{
+    if(PlayerMoveNotPossible(turn, board))
+    {
+        if(PiecesLeftForPlayer(turn, board) != 0)
+        {
+            
+            // If there are pieces left, then that means no pieces can move so
+            // we draw the game
+            gameState = Draw;
+            *winner = NULL;
+            return TRUE;
+        }
+        else
+        {
+            // there is a winner so we set things accordingly
+            gameState = Win;
+            *winner = (turn == BLUE) ? RED : BLUE;
+            return TRUE;
+        }
     }
     
-    int x = 650, y = 500;
-    
-    outtextxy(x, y, "RED : ");
-    outtextxy( x, y+30, itoa(redPieces, numberRed, 10) );
-    
-    outtextxy(x, y+60, "BLUE : ");
-    outtextxy( x, y+90, itoa(bluePieces, numberBlue, 10) );
-    
-    free(numberRed);
-    free(numberBlue);
+    // the game is not over yet
+    return FALSE;
 }
 
 #endif	/* PIECE_H */
