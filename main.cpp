@@ -198,6 +198,7 @@ int main(void)
               } //while ends (Game Loop)
               
             //case 2player ends
+               break; //two player case break
            
            case Win:
            case Draw:
