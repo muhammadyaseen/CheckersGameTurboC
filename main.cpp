@@ -100,10 +100,10 @@ int main(void)
                     }
                     // if the button was clicked, then we check if the correct piece was selected
                     if ( !( mouseX == -1 && mouseY == -1 ) && 
-                          ( mouseX < (COL + 1)*WIDTH && mouseY < (ROW + 1)*HEIGHT ) &&
-                          ( mouseX > (1)*WIDTH && mouseY > (1)*HEIGHT )  )
+                          ( mouseX < (COL + 1)*WIDTH && mouseY < (ROW + 1)*HEIGHT ) &&   //This nasty check ensures that mouse click occured within the bounds
+                          ( mouseX > (1)*WIDTH && mouseY > (1)*HEIGHT )  )              // of checker board
                     {
-                         //for ex, it this is blue's turn but user clicks on a red piece
+                         //for ex, it this is blue's turn but user clicks on a red piece, or a black cell
                          //this check tests that scenario
                          if ( GetClickedCell(mouseX, mouseY, &CheckersBoard)->OccupiedBy != turn)
                          {
