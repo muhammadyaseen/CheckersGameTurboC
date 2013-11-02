@@ -46,10 +46,6 @@ int main(void)
                //Draws the initial state of board
                DrawBoard( &CheckersBoard );
                
-               settextstyle (SIMPLEX_FONT, IGNORE, 2);
-               rectangle(WIDTH_SCREEN*0.795, HEIGHT_SCREEN*0.717,(WIDTH_SCREEN*0.795)+97,(HEIGHT_SCREEN*0.717)+30);
-               outtextxy((WIDTH_SCREEN*0.795)+5,(HEIGHT_SCREEN*0.717)+5,"MENU");
-               
                line (VERTICAL_HUDLINE, 0,VERTICAL_HUDLINE,getmaxy()); //Draws the hud line
                /*
                 Will move the files over the hud line with HUDLINE and any further pixels
@@ -88,10 +84,6 @@ int main(void)
                          //selectionChanged = FALSE;
                          getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
                          
-                         {
-                             if(mouseX>795 && mouseX<892 && mouseY>645 && mouseY<675)
-                                 exit(0);
-                         }
                     }
                     // if the button was clicked, then we check if the correct piece was selected
                     if ( !( mouseX == -1 && mouseY == -1 ) )
