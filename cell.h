@@ -103,13 +103,12 @@ PtrCell GetCellByRowColumn(int row, int col,PtrBoard board, int forTarget = FALS
     return NULL;
 }
 
-/* @description - 
+/* @description - Highlights the targets possible the clicked cell
  * 
- * @param - 
- * @param - 
- * @param - 
+ * @param - clickedCell - Cell / Piece selected by the used
+ * @param - moves - Empty array used to hold possible moves, memory is allocated (and release) in the gameloop
  * 
- * @return -
+ * @return - True if there is at least one possible target for the move, false otherwise
  */
 int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves[], int turn, PtrBoard board, int forAI = FALSE)
 {    
@@ -303,13 +302,12 @@ int IdentifyAndHighlightTargets(PtrCell clickedCell, PtrMove moves[], int turn, 
    }
 }
 
-/* @description - 
+/* @description - prints the row and column of passed in cell (used for debugging)
  * 
- * @param - 
- * @param - 
- * @param - 
+ * @param - cell - whose R,C are to be printed
+ * @param - X - X coord used as starting point for text display
+ * @param - Y - Y coord used as starting point for text display
  * 
- * @return -
  */
 void PrintRC(PtrCell cell, int x, int y)
 {
@@ -331,13 +329,11 @@ void PrintRC(PtrCell cell, int x, int y)
     }
 }
 
-/* @description - 
+/* @description - Sets the passed in params to the board coords of the cell
  * 
- * @param - 
- * @param - 
- * @param - 
- * 
- * @return -
+ * @param - targetNCol - Column of Nth Cell identified as target
+ * @param - targetNRow - Row of Nth Cell identified as target
+ * @param - selectedCell - we have to identify targets for this cell, this is used as a reference
  */
 void SetTargetCoords(int * target1Col,int * target1Row,int * target2Col,int * target2Row, 
                        int * target3Col,int * target3Row,int * target4Col,int * target4Row,
@@ -380,11 +376,14 @@ void SetTargetCoords(int * target1Col,int * target1Row,int * target2Col,int * ta
 
 }
 
-/* @description - 
+/* @description - This is used to construct a 'move' for this 'target', it handles all the complexity of identifying jumps, blockages, non-availability
  * 
- * @param - 
- * @param - 
- * @param - 
+ * @param - currentCell - This cell holds the piece for which we have to construct moves
+ * @param - target - Target or destination of this move
+ * @param - otherTargets - Array containing all 4 possible targets for this move, one or more could be NULL
+ * @param - move - Empty move struct, we fill in this struct as the method progresses
+ * @param - noOfPieces - 2 for peasant, 4 for king
+ * @param - forAI - is this method being called for AI or TwoPlayer mode ?
  * 
  * @return - A filled in and configured move structure
  */
@@ -491,13 +490,14 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
     }
 }
 
-/* @description - 
+/* @description - After the targets have been highlighted, This function intercepts he clicks on higlighted targets and determines which one of the available targets was clicked
  * 
- * @param - 
- * @param - 
- * @param - 
- * 
- * @return -
+ * @param - clickedTarget - Initially NULL, this is set to point the clicked target in the method body
+ * @param - moves - Array of possible moves for this turn, this contains the pointers to all possible target cells
+ * @param - targetX - X coord of mouse position
+ * @param - targetY - Y coord of mouse position
+ * @return - turn - Color of piece whose turn it is
+ * @return - isKing - the piece whose turn it is, a king or not ? (Hail Das Feuhrer!)
  */
 int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
 {   
