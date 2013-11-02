@@ -5,7 +5,7 @@
 #define COL 8
 #define PIECES_COUNT 24    // 12 for 6x6 24 for 8x8
 #define WIDTH 75           // Width of each cell
-#define HEIGHT 75          // Height of each cell
+#define HEIGHT 75         // Height of each cell
 #define RADIUS 25          // Radius of the pieces
 #define DRAW_START_UP 3    // draw piece in first two rows
 #define DRAW_START_DOWN 4  // draw piece in last two rows
@@ -15,6 +15,7 @@
 #define TARGET_CLICK_2 2  //return 2 if 2nd target was clicked
 #define NONE -404         //when a cell is not occupied by RED or BLUE
 #define VERTICAL_HUDLINE ((COL + 2) * WIDTH) //Hudline will be created after col+2 and with the cell width
+#define BORAD_OFFSET 50
 
 // For AI
 #define HIGH_PRIORITY 100
