@@ -29,10 +29,10 @@ void DrawBoard(PtrBoard board)
        for(int col = 0; col < COL; col++)
         {
            // configure the cell properties so that it can be drawn
-            board->Cells[cellNo].Left = WIDTH * col + BORAD_OFFSET;
-            board->Cells[cellNo].Top = HEIGHT * row  + BORAD_OFFSET;
-            board->Cells[cellNo].Right = WIDTH * (1+col)  + BORAD_OFFSET;
-            board->Cells[cellNo].Bottom =  HEIGHT * (1+row)  + BORAD_OFFSET;
+            board->Cells[cellNo].Left = WIDTH * col + BOARD_OFFSET;
+            board->Cells[cellNo].Top = HEIGHT * row  + BOARD_OFFSET;
+            board->Cells[cellNo].Right = WIDTH * (1+col)  + BOARD_OFFSET;
+            board->Cells[cellNo].Bottom =  HEIGHT * (1+row)  + BOARD_OFFSET;
             board->Cells[cellNo].Index = cellNo;
             
             board->Cells[cellNo].IsOccupied = FALSE;

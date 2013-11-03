@@ -499,7 +499,7 @@ void GetMove( PtrCell currentCell, PtrCell target, PtrCell otherTargets[], int t
  * @return - turn - Color of piece whose turn it is
  * @return - isKing - the piece whose turn it is, a king or not ? (Hail Das Feuhrer!)
  */
-int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove moves[], int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
+int InterceptTargetClicks(PtrCell * clickedTarget, PtrMove* moves, int * targetX, int * targetY, int turn, PtrBoard board, int isKing )
 {   
     getmouseclick(WM_LBUTTONDOWN, *targetX, *targetY);
     outtextxy(VERTICAL_HUDLINE + 50, 50, "                      ");

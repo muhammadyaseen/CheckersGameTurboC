@@ -15,7 +15,7 @@
 #define TARGET_CLICK_2 2  //return 2 if 2nd target was clicked
 #define NONE -404         //when a cell is not occupied by RED or BLUE
 #define VERTICAL_HUDLINE ((COL + 2) * WIDTH) //Hudline will be created after col+2 and with the cell width
-#define BORAD_OFFSET 50
+#define BOARD_OFFSET 50
 
 // For AI
 #define HIGH_PRIORITY 100
