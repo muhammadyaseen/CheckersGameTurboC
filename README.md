@@ -14,3 +14,4 @@ How to set up
 5. Setup `WinBGIm` library as described [Here](http://rushabhthathi.wordpress.com/2011/01/22/getting-graphics-h-to-work-on-mingw32-gnu-c-compiler/)
 6. Notice the `.cpp` extension of `main.cpp`
 7. Run the project.
+8. Thank you
